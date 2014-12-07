@@ -8,13 +8,13 @@
 
 import Foundation
 
-let config = MyAPIConfig(baseURL: "http://qiita.com/api/v2")
-let apiFactory = MyAPIFactory(config: config)
-let itemAPI = apiFactory.createMyAPIItem()
+private let config = MyAPIConfig(baseURL: "http://qiita.com/api/v2")
+private let apiFactory = MyAPIFactory(config: config)
+private let itemAPI = apiFactory.createMyAPIItem()
 
-let queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0)
+private let queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0)
 
-println(1)
+
 itemAPI.call(MyAPIItem.Params(), queue: queue) { (response, items) in
     if let sureItems = items {
         println(Item.toJsonString(sureItems, pritty: true))
@@ -22,6 +22,5 @@ itemAPI.call(MyAPIItem.Params(), queue: queue) { (response, items) in
         println("Items parse error")
     }
 }
-println(2)
 
 CFRunLoopRun()

@@ -115,16 +115,15 @@ public class MyAPIBase {
     
     public var config: MyAPIConfigProtocol
     public let apiRequest : MyAPIRequest
+    public var handlerQueue: dispatch_queue_t?
 
     public init(config: MyAPIConfigProtocol, info: MyAPIInfo) {
         self.config = config
         self.apiRequest = MyAPIRequest(info: info)
     }
     
-    func call(query q: [String:String]? = nil, body: NSData? = nil,  headers hdr: [String:String]? = nil, config cfg: MyAPIConfigProtocol? = nil, queue: dispatch_queue_t? = nil, completionHandler: CompletionHandler? = nil) {
+    func call(query q: [String:String]? = nil, body: NSData? = nil, completionHandler: CompletionHandler? = nil) {
         let query = q ?? [String:String]()
-        let config = cfg ?? self.config
-        let headers = hdr ?? [String:String]()
         
         // set URL if not yet
         let request = apiRequest.request
@@ -141,18 +140,13 @@ public class MyAPIBase {
         // default customize
         config.beforeRequest(apiRequest)
         
-        // adhoc header overwrite
-        for (k, v) in headers {
-            request.setValue(v, forHTTPHeaderField: k)
-        }
-
         dispatch_async(config.queue) {
             var response: NSURLResponse?   // = NSURLResponse() as NSURLResponse?
             var error: NSError?            // = NSError() as NSError?
             var data = NSURLConnection.sendSynchronousRequest(request, returningResponse: &response, error: &error)
             var apiResponse = MyAPIResponse(request: self.apiRequest, response: response as? NSHTTPURLResponse, data: data, error: error)
             if let handler = completionHandler {
-                dispatch_async(queue ?? dispatch_get_main_queue()) { // Thread周りは微妙。どうするといいだろう。
+                dispatch_async(self.handlerQueue ?? dispatch_get_main_queue()) { // Thread周りは微妙。どうするといいだろう。
                     handler(apiResponse)
                 }
             }
