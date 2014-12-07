@@ -25,14 +25,11 @@ private func decodeOptional(obj: AnyObject?) -> AnyObject? {
 
 public class JsonGenEntityBase {
     public init() {
+
     }
 
     public func toJsonDictionary() -> NSDictionary {
         return NSDictionary()
-    }
-    
-    public class func toJsonArray(entityList: [JsonGenEntityBase]) -> NSArray {
-        return entityList.map {x in encode(x)}
     }
 
     public func toJsonData() -> NSData {
@@ -44,45 +41,16 @@ public class JsonGenEntityBase {
         return NSString(data: toJsonData(), encoding: NSUTF8StringEncoding)!
     }
 
-    public class func fromData(data: NSData!) -> AnyObject? {
+    public class func fromData(data: NSData!) -> JsonGenEntityBase? {
         if data == nil {
             return nil
         }
-
-        var object = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: nil) as? NSObject
-        switch object {
-        case let hash as NSDictionary:
-            return fromJsonDictionary(hash)
-            
-        case let array as NSArray:
-            return fromJsonArray(array)
-
-        default:
-            return nil
-        }
+        var hash = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: nil) as? NSDictionary
+        return fromJsonDictionary(hash)
     }
 
     public class func fromJsonDictionary(hash: NSDictionary?) -> JsonGenEntityBase? {
         return nil
-    }
-    
-    public class func fromJsonArray(array: NSArray?) -> [JsonGenEntityBase]? {
-        if array == nil {
-            return nil
-        }
-        var ret = [JsonGenEntityBase]()
-        if let xx = array as? [NSDictionary] {
-            for x in xx {
-                if let obj = fromJsonDictionary(x) {
-                    ret.append(obj)
-                } else {
-                    return nil
-                }
-            }
-        } else {
-            return nil
-        }
-        return ret
     }
 }
 
@@ -233,6 +201,33 @@ public class Item : JsonGenEntityBase {
             // Decode user
             if let x = User.fromJsonDictionary((h["user"] as? NSDictionary)) {
                 this.user = x
+            } else {
+                return nil
+            }
+
+            return this
+        } else {
+            return nil
+        }
+    }
+}
+
+public class ItemList : JsonGenEntityBase {
+    var Item:  = ()
+
+    public override func toJsonDictionary() -> NSDictionary {
+        var hash = NSMutableDictionary()
+        // Encode Item
+        hash["Item"] = self.Item.toJsonDictionary()
+        return hash
+    }
+
+    public override class func fromJsonDictionary(hash: NSDictionary?) -> ItemList? {
+        if let h = hash {
+            var this = ItemList()
+            // Decode Item
+            if let x = .fromJsonDictionary((h["Item"] as? NSDictionary)) {
+                this.Item = x
             } else {
                 return nil
             }
