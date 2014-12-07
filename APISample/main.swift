@@ -16,7 +16,11 @@ let queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0)
 
 println(1)
 itemAPI.call(MyAPIItem.Params(), queue: queue) { (response, items) in
-    println(Item.toJsonString(items, pritty: true))
+    if let sureItems = items {
+        println(Item.toJsonString(sureItems, pritty: true))
+    } else {
+        println("Items parse error")
+    }
 }
 println(2)
 

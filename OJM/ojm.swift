@@ -45,8 +45,12 @@ public class JsonGenEntityBase {
         return JsonGenEntityBase.toJson(obj, pritty: pritty)
     }
 
-    public func toJsonString() -> NSString {
-        return NSString(data: toJsonData(), encoding: NSUTF8StringEncoding)!
+    public class func toJsonString(entityList: [JsonGenEntityBase], pritty: Bool = false) -> NSString {
+        return NSString(data: toJsonData(entityList, pritty: pritty), encoding: NSUTF8StringEncoding)!
+    }
+
+    public func toJsonString(pritty: Bool = false) -> NSString {
+        return NSString(data: toJsonData(pritty: pritty), encoding: NSUTF8StringEncoding)!
     }
 
     public class func fromData(data: NSData!) -> AnyObject? {
@@ -255,51 +259,81 @@ public class Item : JsonGenEntityBase {
 }
 
 public class User : JsonGenEntityBase {
-    var description: String = ""
-    var facebookId: String = ""
+    var description: String?
+    var facebookId: String?
     var followeesCount: Int = 0
     var followersCount: Int = 0
-    var githubLoginName: String = ""
+    var githubLoginName: String?
     var id: String = ""
     var itemsCount: Int = 0
-    var linkedinId: String = ""
-    var location: String = ""
-    var name: String = ""
-    var organization: String = ""
-    var profileImageUrl: String = ""
-    var twitterScreenName: String = ""
-    var websiteUrl: String = ""
+    var linkedinId: String?
+    var location: String?
+    var name: String?
+    var organization: String?
+    var profileImageUrl: String?
+    var twitterScreenName: String?
+    var websiteUrl: String?
 
     public override func toJsonDictionary() -> NSDictionary {
         var hash = NSMutableDictionary()
         // Encode description
-        hash["description"] = encode(self.description)
+        if let x = self.description {
+            hash["description"] = encode(x)
+        }
+
         // Encode facebookId
-        hash["facebook_id"] = encode(self.facebookId)
+        if let x = self.facebookId {
+            hash["facebook_id"] = encode(x)
+        }
+
         // Encode followeesCount
         hash["followees_count"] = encode(self.followeesCount)
         // Encode followersCount
         hash["followers_count"] = encode(self.followersCount)
         // Encode githubLoginName
-        hash["github_login_name"] = encode(self.githubLoginName)
+        if let x = self.githubLoginName {
+            hash["github_login_name"] = encode(x)
+        }
+
         // Encode id
         hash["id"] = encode(self.id)
         // Encode itemsCount
         hash["items_count"] = encode(self.itemsCount)
         // Encode linkedinId
-        hash["linkedin_id"] = encode(self.linkedinId)
+        if let x = self.linkedinId {
+            hash["linkedin_id"] = encode(x)
+        }
+
         // Encode location
-        hash["location"] = encode(self.location)
+        if let x = self.location {
+            hash["location"] = encode(x)
+        }
+
         // Encode name
-        hash["name"] = encode(self.name)
+        if let x = self.name {
+            hash["name"] = encode(x)
+        }
+
         // Encode organization
-        hash["organization"] = encode(self.organization)
+        if let x = self.organization {
+            hash["organization"] = encode(x)
+        }
+
         // Encode profileImageUrl
-        hash["profile_image_url"] = encode(self.profileImageUrl)
+        if let x = self.profileImageUrl {
+            hash["profile_image_url"] = encode(x)
+        }
+
         // Encode twitterScreenName
-        hash["twitter_screen_name"] = encode(self.twitterScreenName)
+        if let x = self.twitterScreenName {
+            hash["twitter_screen_name"] = encode(x)
+        }
+
         // Encode websiteUrl
-        hash["website_url"] = encode(self.websiteUrl)
+        if let x = self.websiteUrl {
+            hash["website_url"] = encode(x)
+        }
+
         return hash
     }
 
@@ -307,19 +341,9 @@ public class User : JsonGenEntityBase {
         if let h = hash {
             var this = User()
             // Decode description
-            if let x = h["description"] as? String {
-                this.description = x
-            } else {
-                return nil
-            }
-
+            this.description = h["description"] as? String
             // Decode facebookId
-            if let x = h["facebook_id"] as? String {
-                this.facebookId = x
-            } else {
-                return nil
-            }
-
+            this.facebookId = h["facebook_id"] as? String
             // Decode followeesCount
             if let x = h["followees_count"] as? Int {
                 this.followeesCount = x
@@ -335,12 +359,7 @@ public class User : JsonGenEntityBase {
             }
 
             // Decode githubLoginName
-            if let x = h["github_login_name"] as? String {
-                this.githubLoginName = x
-            } else {
-                return nil
-            }
-
+            this.githubLoginName = h["github_login_name"] as? String
             // Decode id
             if let x = h["id"] as? String {
                 this.id = x
@@ -356,54 +375,19 @@ public class User : JsonGenEntityBase {
             }
 
             // Decode linkedinId
-            if let x = h["linkedin_id"] as? String {
-                this.linkedinId = x
-            } else {
-                return nil
-            }
-
+            this.linkedinId = h["linkedin_id"] as? String
             // Decode location
-            if let x = h["location"] as? String {
-                this.location = x
-            } else {
-                return nil
-            }
-
+            this.location = h["location"] as? String
             // Decode name
-            if let x = h["name"] as? String {
-                this.name = x
-            } else {
-                return nil
-            }
-
+            this.name = h["name"] as? String
             // Decode organization
-            if let x = h["organization"] as? String {
-                this.organization = x
-            } else {
-                return nil
-            }
-
+            this.organization = h["organization"] as? String
             // Decode profileImageUrl
-            if let x = h["profile_image_url"] as? String {
-                this.profileImageUrl = x
-            } else {
-                return nil
-            }
-
+            this.profileImageUrl = h["profile_image_url"] as? String
             // Decode twitterScreenName
-            if let x = h["twitter_screen_name"] as? String {
-                this.twitterScreenName = x
-            } else {
-                return nil
-            }
-
+            this.twitterScreenName = h["twitter_screen_name"] as? String
             // Decode websiteUrl
-            if let x = h["website_url"] as? String {
-                this.websiteUrl = x
-            } else {
-                return nil
-            }
-
+            this.websiteUrl = h["website_url"] as? String
             return this
         } else {
             return nil
