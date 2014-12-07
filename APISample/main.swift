@@ -15,8 +15,8 @@ let itemAPI = apiFactory.createMyAPIItem()
 let queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0)
 
 println(1)
-itemAPI.call(MyAPIItem.Params(), queue: queue) { (response, item) in
-    println(item?.toJsonString())
+itemAPI.call(MyAPIItem.Params(), queue: queue) { (response, items) in
+    println(Item.toJsonString(items, pritty: true))
 }
 println(2)
 

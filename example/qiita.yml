@@ -14,8 +14,6 @@ Item:
   url: String
   user: User
 
-ItemList: [Item]
-
 User:
   description: String
   facebook_id: String

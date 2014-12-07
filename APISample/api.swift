@@ -29,7 +29,7 @@ public class MyAPIItem : MyAPIBase {
         }
     }
     
-    func call(params: Params, headers hdr: [String:String]? = nil, config cfg: MyAPIConfigProtocol? = nil, queue: dispatch_queue_t? = nil, completionHandler: ((MyAPIResponse, Item?) -> Void)?) {
+    func call(params: Params, headers hdr: [String:String]? = nil, config cfg: MyAPIConfigProtocol? = nil, queue: dispatch_queue_t? = nil, completionHandler: ((MyAPIResponse, [Item]?) -> Void)?) {
         let request = apiRequest.request
         let urlComponents = NSURLComponents(string: "\(config.baseURL)/\(apiRequest.info.path)")!
         urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") + makeQueryString(params.x())
@@ -37,7 +37,7 @@ public class MyAPIItem : MyAPIBase {
         
         call() { response in
             if let handler = completionHandler {
-                handler(response, Item.fromData(response.data) as? Item)
+                handler(response, Item.fromData(response.data) as? [Item])
             }
         }
     }
