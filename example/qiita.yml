@@ -1,0 +1,33 @@
+Tag:
+  name: String
+  versions: [String]
+
+Item:
+  body: String
+  coediting: Bool
+  created_at: String
+  id: String
+  _private?: Bool
+  tags: [Tag]
+  title: String
+  updated_at: String
+  url: String
+  user: User
+
+ItemList: [Item]
+
+User:
+  description: String
+  facebook_id: String
+  followees_count: Int
+  followers_count: Int
+  github_login_name: String
+  id: String
+  items_count: Int
+  linkedin_id: String
+  location: String
+  name: String
+  organization: String
+  profile_image_url: String
+  twitter_screen_name: String
+  website_url: String
