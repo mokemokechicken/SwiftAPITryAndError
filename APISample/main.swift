@@ -8,7 +8,7 @@
 
 import Foundation
 
-private let config = MyAPIConfig(baseURL: "http://qiita.com/api/v2")
+private let config = MyAPIConfig(baseURL: NSURL(string: "http://qiita.com/api/v2")!)
 private let apiFactory = MyAPIFactory(config: config)
 private let itemAPI = apiFactory.createMyAPIItem()
 

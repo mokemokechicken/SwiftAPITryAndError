@@ -15,34 +15,27 @@ public enum MyAPIBodyFormat {
 
 // APIの実行時の挙動を操作するためのもの
 public protocol MyAPIConfigProtocol {
-    var baseURL: String { get }
+    var baseURL: NSURL { get }
     var bodyFormat: MyAPIBodyFormat { get }
     var queue: dispatch_queue_t { get }
 
-    func buildRequestURL(apiRequest: MyAPIRequest, params: [String:AnyObject])
+    func configureRequest(apiRequest: MyAPIRequest)
     func beforeRequest(request: MyAPIRequest)
     func afterResponse(response: MyAPIResponse)
 }
 
 public class MyAPIConfig : MyAPIConfigProtocol {
-    public let baseURL: String
+    public let baseURL: NSURL
     public let bodyFormat: MyAPIBodyFormat
     public let queue: dispatch_queue_t
     
-    public init(baseURL: String, bodyFormat: MyAPIBodyFormat? = nil, queue: NSOperationQueue? = nil) {
+    public init(baseURL: NSURL, bodyFormat: MyAPIBodyFormat? = nil, queue: NSOperationQueue? = nil) {
         self.baseURL = baseURL
         self.bodyFormat = bodyFormat ?? .JSON
         self.queue = queue ?? dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
     }
     
-    // NSURL をセットする
-    public func buildRequestURL(apiRequest: MyAPIRequest, params: [String:AnyObject]) {
-        let request = apiRequest.request
-        // Add Encoded Query String
-        let urlComponents = NSURLComponents(string: "\(baseURL)/\(apiRequest.info.path)")!
-        urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") +
-        URLUtil.makeQueryString(params)
-        request.URL = urlComponents.URL
+    public func configureRequest(apiRequest: MyAPIRequest) {
     }
     
     public func beforeRequest(request: MyAPIRequest) {}
@@ -130,11 +123,18 @@ public class MyAPIBase {
     }
     
     func doRequest(completionHandler: CompletionHandler) {
+        config.configureRequest(apiRequest)
+        
         // set body if needed
         let method = apiRequest.info.method
         if method == .POST || method == .PUT || method == .PATCH {
             apiRequest.request.HTTPBody = body
         }
+
+        // Add Encoded Query String
+        let urlComponents = NSURLComponents(URL: apiRequest.request.URL!, resolvingAgainstBaseURL: false)!
+        urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") + URLUtil.makeQueryString(query)
+        apiRequest.request.URL = urlComponents.URL
 
         dispatch_async(config.queue) {
             self.config.beforeRequest(self.apiRequest)
