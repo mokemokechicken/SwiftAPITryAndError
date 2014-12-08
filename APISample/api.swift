@@ -36,7 +36,7 @@ public class MyAPIItem : MyAPIBase {
     }
 
     func call(params: Params, completionHandler: ((MyAPIResponse, [Item]?) -> Void)) {
-        self.query = params.toDictionary()
+        query = params.toDictionary()
         
         var path = apiRequest.info.path
         // Convert PATH
@@ -45,6 +45,7 @@ public class MyAPIItem : MyAPIBase {
             query.removeValueForKey("user_id")
         }
         apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
+        
         
         // Do Request
         doRequest() { response in

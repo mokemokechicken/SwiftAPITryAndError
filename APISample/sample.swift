@@ -22,6 +22,7 @@ public protocol MyAPIConfigProtocol {
     func configureRequest(apiRequest: MyAPIRequest)
     func beforeRequest(request: MyAPIRequest)
     func afterResponse(response: MyAPIResponse)
+    func log(str: String?)
 }
 
 public class MyAPIConfig : MyAPIConfigProtocol {
@@ -33,6 +34,12 @@ public class MyAPIConfig : MyAPIConfigProtocol {
         self.baseURL = baseURL
         self.bodyFormat = bodyFormat ?? .JSON
         self.queue = queue ?? dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+    }
+    
+    public func log(str: String?) {
+        if let s = str {
+            NSLog(s)
+        }
     }
     
     public func configureRequest(apiRequest: MyAPIRequest) {
@@ -132,9 +139,14 @@ public class MyAPIBase {
         }
 
         // Add Encoded Query String
-        let urlComponents = NSURLComponents(URL: apiRequest.request.URL!, resolvingAgainstBaseURL: false)!
-        urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") + URLUtil.makeQueryString(query)
-        apiRequest.request.URL = urlComponents.URL
+        let urlComponents = NSURLComponents(URL: apiRequest.request.URL!, resolvingAgainstBaseURL: true)!
+        let qs = URLUtil.makeQueryString(query)
+        if !qs.isEmpty {
+            urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") + qs
+            apiRequest.request.URL = urlComponents.URL
+        }
+        
+        config.log("Request URL: \(apiRequest.request.URL?.absoluteString)")
 
         dispatch_async(config.queue) {
             self.config.beforeRequest(self.apiRequest)

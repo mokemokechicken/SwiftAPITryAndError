@@ -57,6 +57,7 @@ public class JsonGenEntityBase {
         if data == nil {
             return nil
         }
+        // NSString(data: data, encoding: NSUTF8StringEncoding)
 
         var object = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: nil) as? NSObject
         switch object {
