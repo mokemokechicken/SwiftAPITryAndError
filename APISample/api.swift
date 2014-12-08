@@ -41,7 +41,7 @@ public class MyAPIItem : MyAPIBase {
         var path = apiRequest.info.path
         // Convert PATH
         if let x:AnyObject = query["user_id"] {
-            path.stringByReplacingOccurrencesOfString("{user_id}", withString: URLUtil.escape("\(x))"))
+            path.stringByReplacingOccurrencesOfString("{user_id}", withString: URLUtil.escape("\(x)"))
             query.removeValueForKey("user_id")
         }
         apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
