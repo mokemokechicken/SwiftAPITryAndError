@@ -1,17 +1,23 @@
-//
-//  api.swift
-//  APISample
-//
-//  Created by 森下 健 on 2014/12/07.
-//  Copyright (c) 2014年 Yumemi. All rights reserved.
-//
-
 import Foundation
 
-public class MyAPIItem : MyAPIBase {
-    public init(config: MyAPIConfigProtocol) {
-        var meta = [String:String]()
-        let apiInfo = MyAPIInfo(method: .GET, path: "items", meta: meta)
+public class Factory {
+    public let config: YOUSEI_API_GENERATOR_PREFIX_ConfigProtocol
+    
+    public init(config: YOUSEI_API_GENERATOR_PREFIX_ConfigProtocol) {
+        self.config = config
+    }
+    
+    // ADD Custom
+    public func createGetItem() -> GetItem {
+        return GetItem(config: config)
+    }
+}
+
+
+public class GetItem : YOUSEI_API_GENERATOR_PREFIX_Base {
+    public init(config: YOUSEI_API_GENERATOR_PREFIX_ConfigProtocol) {
+        var meta = [String:AnyObject]()
+        let apiInfo = YOUSEI_API_GENERATOR_PREFIX_Info(method: .GET, path: "items", meta: meta)
         super.init(config: config, info: apiInfo)
     }
     
@@ -35,7 +41,7 @@ public class MyAPIItem : MyAPIBase {
         }
     }
 
-    func call(params: Params, completionHandler: ((MyAPIResponse, [Item]?) -> Void)) {
+    func call(params: Params, completionHandler: ((YOUSEI_API_GENERATOR_PREFIX_Response, [Item]?) -> Void)) {
         query = params.toDictionary()
         
         var path = apiRequest.info.path
@@ -53,10 +59,10 @@ public class MyAPIItem : MyAPIBase {
     }
 }
 
-public class MyAPISomePost : MyAPIBase {
-    public init(config: MyAPIConfigProtocol) {
+public class SomePost : YOUSEI_API_GENERATOR_PREFIX_Base {
+    public init(config: YOUSEI_API_GENERATOR_PREFIX_ConfigProtocol) {
         var meta = [String:String]()
-        let apiInfo = MyAPIInfo(method: .POST, path: "some_post", meta: meta)
+        let apiInfo = YOUSEI_API_GENERATOR_PREFIX_Info(method: .POST, path: "some_post", meta: meta)
         super.init(config: config, info: apiInfo)
     }
     
@@ -74,7 +80,7 @@ public class MyAPISomePost : MyAPIBase {
         }
     }
     
-    func call(params: Params, object: User, completionHandler: ((MyAPIResponse, [Item]?) -> Void)) {
+    func call(params: Params, object: User, completionHandler: ((YOUSEI_API_GENERATOR_PREFIX_Response, [Item]?) -> Void)) {
         query = params.toDictionary()
         
         var path = apiRequest.info.path

@@ -8,11 +8,11 @@
 
 import Foundation
 
-private let config = MyAPIConfig(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
-private let apiFactory = MyAPIFactory(config: config)
-private let itemAPI = apiFactory.createMyAPIItem()
+private let config = YOUSEI_API_GENERATOR_PREFIX_Config(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
+private let apiFactory = YOUSEI_API_GENERATOR_PREFIX_Factory(config: config)
+private let itemAPI = apiFactory.createGetItem()
 
-itemAPI.call(MyAPIItem.Params()) { (response, items) in
+itemAPI.call(GetItem.Params()) { (response, items) in
     if let sureItems = items {
         println(Item.toJsonString(sureItems, pritty: true))
     } else {

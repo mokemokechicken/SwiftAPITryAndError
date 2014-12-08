@@ -1,13 +1,4 @@
-//
-//  sample.swift
-//  APISample
-//
-//  Created by 森下 健 on 2014/12/07.
-//  Copyright (c) 2014年 Yumemi. All rights reserved.
-//
-
 import Foundation
-
 
 private func try<T>(x: T?, handler: (T) -> Void) {
     if let xx = x {
@@ -23,30 +14,30 @@ private func try<T>(x: T?, handler: (T) -> Any?) -> Any? {
 }
 
 
-public enum MyAPIBodyFormat {
+public enum YOUSEI_API_GENERATOR_PREFIX_BodyFormat {
     case JSON, FormURLEncoded
 }
 
 // APIの実行時の挙動を操作するためのもの
-public protocol MyAPIConfigProtocol {
+public protocol YOUSEI_API_GENERATOR_PREFIX_ConfigProtocol {
     var baseURL: NSURL { get }
-    var bodyFormat: MyAPIBodyFormat { get }
+    var bodyFormat: YOUSEI_API_GENERATOR_PREFIX_BodyFormat { get }
     var userAgent: String? { get }
     var queue: dispatch_queue_t { get }
-
-    func configureRequest(apiRequest: MyAPIRequest)
-    func beforeRequest(apiRequest: MyAPIRequest)
-    func afterResponse(apiResponse: MyAPIResponse)
+    
+    func configureRequest(apiRequest: YOUSEI_API_GENERATOR_PREFIX_Request)
+    func beforeRequest(apiRequest: YOUSEI_API_GENERATOR_PREFIX_Request)
+    func afterResponse(apiResponse: YOUSEI_API_GENERATOR_PREFIX_Response)
     func log(str: String?)
 }
 
-public class MyAPIConfig : MyAPIConfigProtocol {
+public class YOUSEI_API_GENERATOR_PREFIX_Config : YOUSEI_API_GENERATOR_PREFIX_ConfigProtocol {
     public let baseURL: NSURL
-    public let bodyFormat: MyAPIBodyFormat
+    public let bodyFormat: YOUSEI_API_GENERATOR_PREFIX_BodyFormat
     public let queue: dispatch_queue_t
     public var userAgent: String?
     
-    public init(baseURL: NSURL, bodyFormat: MyAPIBodyFormat? = nil, queue: NSOperationQueue? = nil) {
+    public init(baseURL: NSURL, bodyFormat: YOUSEI_API_GENERATOR_PREFIX_BodyFormat? = nil, queue: NSOperationQueue? = nil) {
         self.baseURL = baseURL
         self.bodyFormat = bodyFormat ?? .JSON
         self.queue = queue ?? dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
@@ -56,12 +47,12 @@ public class MyAPIConfig : MyAPIConfigProtocol {
         NSLog("\(str)")
     }
     
-    public func configureRequest(apiRequest: MyAPIRequest) {
+    public func configureRequest(apiRequest: YOUSEI_API_GENERATOR_PREFIX_Request) {
         apiRequest.request.setValue("gzip;q=1.0,compress;q=0.5", forHTTPHeaderField: "Accept-Encoding")
         try(userAgent) { ua in apiRequest.request.setValue(ua, forHTTPHeaderField: "User-Agent") }
     }
     
-    public func beforeRequest(apiRequest: MyAPIRequest) {
+    public func beforeRequest(apiRequest: YOUSEI_API_GENERATOR_PREFIX_Request) {
         let method = apiRequest.info.method
         if method == .POST || method == .PUT || method == .PATCH {
             switch bodyFormat {
@@ -72,33 +63,20 @@ public class MyAPIConfig : MyAPIConfigProtocol {
             }
         }
     }
-    public func afterResponse(apiResponse: MyAPIResponse) {}
+    public func afterResponse(apiResponse: YOUSEI_API_GENERATOR_PREFIX_Response) {}
 }
 
-public class MyAPIFactory {
-    public let config: MyAPIConfigProtocol
-    
-    public init(config: MyAPIConfigProtocol) {
-        self.config = config
-    }
-    
-    // ADD Custom
-    public func createMyAPIItem() -> MyAPIItem {
-        return MyAPIItem(config: config)
-    }
-}
-
-public protocol MyAPIEntityProtocol {
+public protocol YOUSEI_API_GENERATOR_PREFIX_EntityProtocol {
     func toJsonDictionary() -> NSDictionary
     func toJsonData() -> NSData
     func toJsonString() -> NSString
     
-    class func fromData(data: NSData!) -> MyAPIEntityProtocol?
-    class func fromJsonDictionary(hash: NSDictionary?) -> MyAPIEntityProtocol?
+    class func fromData(data: NSData!) -> YOUSEI_API_GENERATOR_PREFIX_EntityProtocol?
+    class func fromJsonDictionary(hash: NSDictionary?) -> YOUSEI_API_GENERATOR_PREFIX_EntityProtocol?
 }
 
 // API定義から作られる静的な情報、を動的に参照するためのもの
-public class MyAPIInfo {
+public class YOUSEI_API_GENERATOR_PREFIX_Info {
     public enum HTTPMethod : String {
         case GET    = "GET"
         case POST   = "POST"
@@ -118,22 +96,22 @@ public class MyAPIInfo {
     }
 }
 
-public class MyAPIRequest {
+public class YOUSEI_API_GENERATOR_PREFIX_Request {
     public let request = NSMutableURLRequest()
-    public let info : MyAPIInfo
+    public let info : YOUSEI_API_GENERATOR_PREFIX_Info
     
-    public init(info: MyAPIInfo) {
+    public init(info: YOUSEI_API_GENERATOR_PREFIX_Info) {
         self.info = info
     }
 }
 
-public class MyAPIResponse {
+public class YOUSEI_API_GENERATOR_PREFIX_Response {
     public let response: NSHTTPURLResponse?
     public let error: NSError?
-    public let request: MyAPIRequest
+    public let request: YOUSEI_API_GENERATOR_PREFIX_Request
     public let data: NSData?
     
-    public init(request: MyAPIRequest, response: NSHTTPURLResponse?, data: NSData?, error: NSError?) {
+    public init(request: YOUSEI_API_GENERATOR_PREFIX_Request, response: NSHTTPURLResponse?, data: NSData?, error: NSError?) {
         self.request = request
         self.response = response
         self.data = data
@@ -141,20 +119,20 @@ public class MyAPIResponse {
     }
 }
 
-public class MyAPIBase {
-    public typealias CompletionHandler = (MyAPIResponse) -> Void
+public class YOUSEI_API_GENERATOR_PREFIX_Base {
+    public typealias CompletionHandler = (YOUSEI_API_GENERATOR_PREFIX_Response) -> Void
     
-    public var config: MyAPIConfigProtocol
-    public let apiRequest : MyAPIRequest
+    public var config: YOUSEI_API_GENERATOR_PREFIX_ConfigProtocol
+    public let apiRequest : YOUSEI_API_GENERATOR_PREFIX_Request
     public var handlerQueue: dispatch_queue_t?
     public var query = [String:AnyObject]()
     public var body: NSData?
-
-    public init(config: MyAPIConfigProtocol, info: MyAPIInfo) {
+    
+    public init(config: YOUSEI_API_GENERATOR_PREFIX_ConfigProtocol, info: YOUSEI_API_GENERATOR_PREFIX_Info) {
         self.config = config
-        self.apiRequest = MyAPIRequest(info: info)
+        self.apiRequest = YOUSEI_API_GENERATOR_PREFIX_Request(info: info)
     }
-
+    
     func setBody(object: JsonGenEntityBase) {
         // set body if needed
         let method = apiRequest.info.method
@@ -178,7 +156,7 @@ public class MyAPIBase {
     
     func doRequest(completionHandler: CompletionHandler) {
         config.configureRequest(apiRequest)
-
+        
         // Add Encoded Query String
         let urlComponents = NSURLComponents(URL: apiRequest.request.URL!, resolvingAgainstBaseURL: true)!
         let qs = URLUtil.makeQueryString(query)
@@ -188,13 +166,13 @@ public class MyAPIBase {
         }
         
         config.log("Request URL: \(apiRequest.request.URL?.absoluteString)")
-
+        
         dispatch_async(config.queue) {
             self.config.beforeRequest(self.apiRequest)
             var response: NSURLResponse?
             var error: NSError?
             var data = NSURLConnection.sendSynchronousRequest(self.apiRequest.request, returningResponse: &response, error: &error)
-            var apiResponse = MyAPIResponse(request: self.apiRequest, response: response as? NSHTTPURLResponse, data: data, error: error)
+            var apiResponse = YOUSEI_API_GENERATOR_PREFIX_Response(request: self.apiRequest, response: response as? NSHTTPURLResponse, data: data, error: error)
             self.config.afterResponse(apiResponse)
             dispatch_async(self.handlerQueue ?? dispatch_get_main_queue()) { // Thread周りは微妙。どうするといいだろう。
                 completionHandler(apiResponse)
@@ -231,7 +209,7 @@ class URLUtil {
         
         return components
     }
-
+    
     class func escape(string: String) -> String {
         let legalURLCharactersToBeEscaped: CFStringRef = ":/?&=;+!@#$()',*"
         return CFURLCreateStringByAddingPercentEscapes(nil, string, nil, legalURLCharactersToBeEscaped, CFStringBuiltInEncodings.UTF8.rawValue)

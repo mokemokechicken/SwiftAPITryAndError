@@ -2,9 +2,9 @@
 
 cd $(dirname $0)
 
-git submodule update --init --recursive
+#git submodule update --init --recursive
 
 mkdir -p OJM
 
-ruby ObjectJsonMapperGenerator/bin/make_ojm.rb -c example/qiita.yml -l swift -o OJM/ojm.swift
+ruby ObjectJsonMapperGenerator/bin/make_ojm.rb -c example/qiita.yml -l swift -t json -o OJM/ojm.swift
 
