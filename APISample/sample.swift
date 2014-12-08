@@ -19,7 +19,7 @@ public protocol MyAPIConfigProtocol {
     var bodyFormat: MyAPIBodyFormat { get }
     var queue: dispatch_queue_t { get }
 
-    func buildRequestURL(request: MyAPIRequest, params: [String:String]) -> NSURL
+    func buildRequestURL(request: MyAPIRequest, params: [String:AnyObject]) -> NSURL
     func beforeRequest(request: MyAPIRequest)
     func afterResponse(response: MyAPIResponse)
 }
@@ -35,7 +35,7 @@ public class MyAPIConfig : MyAPIConfigProtocol {
         self.queue = queue ?? dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
     }
     
-    public func buildRequestURL(request: MyAPIRequest, params: [String:String]) -> NSURL {
+    public func buildRequestURL(request: MyAPIRequest, params: [String:AnyObject]) -> NSURL {
         // TODO: Replace PATH parameter
         return NSURL()
     }
@@ -116,15 +116,15 @@ public class MyAPIBase {
     public var config: MyAPIConfigProtocol
     public let apiRequest : MyAPIRequest
     public var handlerQueue: dispatch_queue_t?
+    public var query = [String:AnyObject]()
+    public var body: NSData?
 
     public init(config: MyAPIConfigProtocol, info: MyAPIInfo) {
         self.config = config
         self.apiRequest = MyAPIRequest(info: info)
     }
     
-    func call(query q: [String:String]? = nil, body: NSData? = nil, completionHandler: CompletionHandler? = nil) {
-        let query = q ?? [String:String]()
-        
+    func doRequest(completionHandler: CompletionHandler) {
         // set URL if not yet
         let request = apiRequest.request
         if request.URL == nil {
@@ -145,10 +145,8 @@ public class MyAPIBase {
             var error: NSError?            // = NSError() as NSError?
             var data = NSURLConnection.sendSynchronousRequest(request, returningResponse: &response, error: &error)
             var apiResponse = MyAPIResponse(request: self.apiRequest, response: response as? NSHTTPURLResponse, data: data, error: error)
-            if let handler = completionHandler {
-                dispatch_async(self.handlerQueue ?? dispatch_get_main_queue()) { // Thread周りは微妙。どうするといいだろう。
-                    handler(apiResponse)
-                }
+            dispatch_async(self.handlerQueue ?? dispatch_get_main_queue()) { // Thread周りは微妙。どうするといいだろう。
+                completionHandler(apiResponse)
             }
         }
     }
@@ -160,6 +158,10 @@ public class MyAPIBase {
     }
     
     ///////////////////// Begin https://github.com/Alamofire/Alamofire/blob/master/Source/Alamofire.swift
+    func makeQueryString(params: [(String, AnyObject)]) -> String {
+        return ""
+    }
+    
     func makeQueryString(parameters: [String: AnyObject]) -> String {
         var components: [(String, String)] = []
         for key in sorted(Array(parameters.keys), <) {

@@ -24,21 +24,25 @@ public class MyAPIItem : MyAPIBase {
             self.perPage = perPage
         }
         
-        public func x() -> [String:AnyObject] {
-            return [String:AnyObject]()
+        public func toDictionary() -> [String:AnyObject] {
+            var ret = [String:AnyObject]()
+            if let x = page { ret["page"] = x }
+            if let x = perPage { ret["per_page"] = x }
+            return ret
         }
     }
-    
-    func call(params: Params, headers hdr: [String:String]? = nil, config cfg: MyAPIConfigProtocol? = nil, queue: dispatch_queue_t? = nil, completionHandler: ((MyAPIResponse, [Item]?) -> Void)?) {
+
+    func call(params: Params, completionHandler: ((MyAPIResponse, [Item]?) -> Void)?) {
         let request = apiRequest.request
         let urlComponents = NSURLComponents(string: "\(config.baseURL)/\(apiRequest.info.path)")!
-        urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") + makeQueryString(params.x())
+        urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") + makeQueryString(params.toDictionary())
         request.URL = urlComponents.URL
         
-        call() { response in
+        doRequest() { response in
             if let handler = completionHandler {
                 handler(response, Item.fromData(response.data) as? [Item])
             }
+            return
         }
     }
     

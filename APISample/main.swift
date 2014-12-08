@@ -12,10 +12,7 @@ private let config = MyAPIConfig(baseURL: "http://qiita.com/api/v2")
 private let apiFactory = MyAPIFactory(config: config)
 private let itemAPI = apiFactory.createMyAPIItem()
 
-private let queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0)
-
-
-itemAPI.call(MyAPIItem.Params(), queue: queue) { (response, items) in
+itemAPI.call(MyAPIItem.Params()) { (response, items) in
     if let sureItems = items {
         println(Item.toJsonString(sureItems, pritty: true))
     } else {
