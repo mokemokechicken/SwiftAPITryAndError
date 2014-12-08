@@ -19,7 +19,7 @@ public protocol MyAPIConfigProtocol {
     var bodyFormat: MyAPIBodyFormat { get }
     var queue: dispatch_queue_t { get }
 
-    func buildRequestURL(request: MyAPIRequest, params: [String:AnyObject]) -> NSURL
+    func buildRequestURL(apiRequest: MyAPIRequest, params: [String:AnyObject])
     func beforeRequest(request: MyAPIRequest)
     func afterResponse(response: MyAPIResponse)
 }
@@ -35,9 +35,14 @@ public class MyAPIConfig : MyAPIConfigProtocol {
         self.queue = queue ?? dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
     }
     
-    public func buildRequestURL(request: MyAPIRequest, params: [String:AnyObject]) -> NSURL {
-        // TODO: Replace PATH parameter
-        return NSURL()
+    // NSURL をセットする
+    public func buildRequestURL(apiRequest: MyAPIRequest, params: [String:AnyObject]) {
+        let request = apiRequest.request
+        // Add Encoded Query String
+        let urlComponents = NSURLComponents(string: "\(baseURL)/\(apiRequest.info.path)")!
+        urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") +
+        URLUtil.makeQueryString(params)
+        request.URL = urlComponents.URL
     }
     
     public func beforeRequest(request: MyAPIRequest) {}
@@ -125,44 +130,29 @@ public class MyAPIBase {
     }
     
     func doRequest(completionHandler: CompletionHandler) {
-        // set URL if not yet
-        let request = apiRequest.request
-        if request.URL == nil {
-            request.URL = config.buildRequestURL(apiRequest, params: query)
-        }
-        
         // set body if needed
         let method = apiRequest.info.method
         if method == .POST || method == .PUT || method == .PATCH {
-            request.HTTPBody = body
+            apiRequest.request.HTTPBody = body
         }
 
-        // default customize
-        config.beforeRequest(apiRequest)
-        
         dispatch_async(config.queue) {
+            self.config.beforeRequest(self.apiRequest)
             var response: NSURLResponse?   // = NSURLResponse() as NSURLResponse?
             var error: NSError?            // = NSError() as NSError?
-            var data = NSURLConnection.sendSynchronousRequest(request, returningResponse: &response, error: &error)
+            var data = NSURLConnection.sendSynchronousRequest(self.apiRequest.request, returningResponse: &response, error: &error)
             var apiResponse = MyAPIResponse(request: self.apiRequest, response: response as? NSHTTPURLResponse, data: data, error: error)
+            self.config.afterResponse(apiResponse)
             dispatch_async(self.handlerQueue ?? dispatch_get_main_queue()) { // Thread周りは微妙。どうするといいだろう。
                 completionHandler(apiResponse)
             }
         }
     }
-    
-    func encode(data: AnyObject, format: MyAPIBodyFormat) {
-        // TODO
-        
-        
-    }
-    
+}
+
+class URLUtil {
     ///////////////////// Begin https://github.com/Alamofire/Alamofire/blob/master/Source/Alamofire.swift
-    func makeQueryString(params: [(String, AnyObject)]) -> String {
-        return ""
-    }
-    
-    func makeQueryString(parameters: [String: AnyObject]) -> String {
+    class func makeQueryString(parameters: [String: AnyObject]) -> String {
         var components: [(String, String)] = []
         for key in sorted(Array(parameters.keys), <) {
             let value: AnyObject! = parameters[key]
@@ -172,7 +162,7 @@ public class MyAPIBase {
         return join("&", components.map{"\($0)=\($1)"} as [String])
     }
     
-    func queryComponents(key: String, _ value: AnyObject) -> [(String, String)] {
+    class func queryComponents(key: String, _ value: AnyObject) -> [(String, String)] {
         var components = [(String, String)]()
         if let dictionary = value as? [String: AnyObject] {
             for (nestedKey, value) in dictionary {
@@ -188,8 +178,12 @@ public class MyAPIBase {
         
         return components
     }
+
+    class func encode(data: AnyObject, format: MyAPIBodyFormat) {
+    }
     
-    func escape(string: String) -> String {
+    
+    class func escape(string: String) -> String {
         let legalURLCharactersToBeEscaped: CFStringRef = ":/?&=;+!@#$()',*"
         return CFURLCreateStringByAddingPercentEscapes(nil, string, nil, legalURLCharactersToBeEscaped, CFStringBuiltInEncodings.UTF8.rawValue)
     }

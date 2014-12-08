@@ -33,11 +33,10 @@ public class MyAPIItem : MyAPIBase {
     }
 
     func call(params: Params, completionHandler: ((MyAPIResponse, [Item]?) -> Void)?) {
-        let request = apiRequest.request
-        let urlComponents = NSURLComponents(string: "\(config.baseURL)/\(apiRequest.info.path)")!
-        urlComponents.percentEncodedQuery = (urlComponents.percentEncodedQuery != nil ? urlComponents.percentEncodedQuery! + "&" : "") + makeQueryString(params.toDictionary())
-        request.URL = urlComponents.URL
+        // Convert PATH
+         config.buildRequestURL(apiRequest, params: params.toDictionary())
         
+        // Do Request
         doRequest() { response in
             if let handler = completionHandler {
                 handler(response, Item.fromData(response.data) as? [Item])
