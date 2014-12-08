@@ -46,10 +46,49 @@ public class MyAPIItem : MyAPIBase {
         }
         apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
         
-        
         // Do Request
         doRequest() { response in
             completionHandler(response, Item.fromData(response.data) as? [Item])
         }
     }
 }
+
+public class MyAPISomePost : MyAPIBase {
+    public init(config: MyAPIConfigProtocol) {
+        var meta = [String:String]()
+        let apiInfo = MyAPIInfo(method: .POST, path: "some_post", meta: meta)
+        super.init(config: config, info: apiInfo)
+    }
+    
+    public class Params {
+        public var userId: Int
+        
+        public init(userId: Int) {
+            self.userId = userId
+        }
+        
+        public func toDictionary() -> [String:AnyObject] {
+            var ret = [String:AnyObject]()
+            ret["user_id"] = userId
+            return ret
+        }
+    }
+    
+    func call(params: Params, object: User, completionHandler: ((MyAPIResponse, [Item]?) -> Void)) {
+        query = params.toDictionary()
+        
+        var path = apiRequest.info.path
+        // Convert PATH
+        if let x:AnyObject = query["user_id"] {
+            path.stringByReplacingOccurrencesOfString("{user_id}", withString: URLUtil.escape("\(x)"))
+            query.removeValueForKey("user_id")
+        }
+        apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
+        
+        // Do Request
+        doRequest(object) { response in
+            completionHandler(response, Item.fromData(response.data) as? [Item])
+        }
+    }
+}
+

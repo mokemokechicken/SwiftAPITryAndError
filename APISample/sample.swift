@@ -9,6 +9,20 @@
 import Foundation
 
 
+private func try<T>(x: T?, handler: (T) -> Void) {
+    if let xx = x {
+        handler(xx)
+    }
+}
+
+private func try<T>(x: T?, handler: (T) -> Any?) -> Any? {
+    if let xx = x {
+        return handler(xx)
+    }
+    return nil
+}
+
+
 public enum MyAPIBodyFormat {
     case JSON, FormURLEncoded
 }
@@ -17,11 +31,12 @@ public enum MyAPIBodyFormat {
 public protocol MyAPIConfigProtocol {
     var baseURL: NSURL { get }
     var bodyFormat: MyAPIBodyFormat { get }
+    var userAgent: String? { get }
     var queue: dispatch_queue_t { get }
 
     func configureRequest(apiRequest: MyAPIRequest)
-    func beforeRequest(request: MyAPIRequest)
-    func afterResponse(response: MyAPIResponse)
+    func beforeRequest(apiRequest: MyAPIRequest)
+    func afterResponse(apiResponse: MyAPIResponse)
     func log(str: String?)
 }
 
@@ -29,6 +44,7 @@ public class MyAPIConfig : MyAPIConfigProtocol {
     public let baseURL: NSURL
     public let bodyFormat: MyAPIBodyFormat
     public let queue: dispatch_queue_t
+    public var userAgent: String?
     
     public init(baseURL: NSURL, bodyFormat: MyAPIBodyFormat? = nil, queue: NSOperationQueue? = nil) {
         self.baseURL = baseURL
@@ -37,16 +53,26 @@ public class MyAPIConfig : MyAPIConfigProtocol {
     }
     
     public func log(str: String?) {
-        if let s = str {
-            NSLog(s)
-        }
+        NSLog("\(str)")
     }
     
     public func configureRequest(apiRequest: MyAPIRequest) {
+        apiRequest.request.setValue("gzip;q=1.0,compress;q=0.5", forHTTPHeaderField: "Accept-Encoding")
+        try(userAgent) { ua in apiRequest.request.setValue(ua, forHTTPHeaderField: "User-Agent") }
     }
     
-    public func beforeRequest(request: MyAPIRequest) {}
-    public func afterResponse(response: MyAPIResponse) {}
+    public func beforeRequest(apiRequest: MyAPIRequest) {
+        let method = apiRequest.info.method
+        if method == .POST || method == .PUT || method == .PATCH {
+            switch bodyFormat {
+            case .FormURLEncoded:
+                apiRequest.request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            case .JSON:
+                apiRequest.request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
+        }
+    }
+    public func afterResponse(apiResponse: MyAPIResponse) {}
 }
 
 public class MyAPIFactory {
@@ -128,15 +154,30 @@ public class MyAPIBase {
         self.config = config
         self.apiRequest = MyAPIRequest(info: info)
     }
-    
-    func doRequest(completionHandler: CompletionHandler) {
-        config.configureRequest(apiRequest)
-        
+
+    func setBody(object: JsonGenEntityBase) {
         // set body if needed
         let method = apiRequest.info.method
         if method == .POST || method == .PUT || method == .PATCH {
+            switch(config.bodyFormat) {
+            case .FormURLEncoded:
+                let str = URLUtil.makeQueryString(object.toJsonDictionary() as [String:AnyObject])
+                self.body = str.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+                
+            case .JSON:
+                self.body = object.toJsonData()
+            }
             apiRequest.request.HTTPBody = body
         }
+    }
+    
+    func doRequest(object: JsonGenEntityBase, completionHandler: CompletionHandler) {
+        setBody(object)
+        doRequest(completionHandler)
+    }
+    
+    func doRequest(completionHandler: CompletionHandler) {
+        config.configureRequest(apiRequest)
 
         // Add Encoded Query String
         let urlComponents = NSURLComponents(URL: apiRequest.request.URL!, resolvingAgainstBaseURL: true)!
@@ -150,8 +191,8 @@ public class MyAPIBase {
 
         dispatch_async(config.queue) {
             self.config.beforeRequest(self.apiRequest)
-            var response: NSURLResponse?   // = NSURLResponse() as NSURLResponse?
-            var error: NSError?            // = NSError() as NSError?
+            var response: NSURLResponse?
+            var error: NSError?
             var data = NSURLConnection.sendSynchronousRequest(self.apiRequest.request, returningResponse: &response, error: &error)
             var apiResponse = MyAPIResponse(request: self.apiRequest, response: response as? NSHTTPURLResponse, data: data, error: error)
             self.config.afterResponse(apiResponse)
@@ -162,8 +203,8 @@ public class MyAPIBase {
     }
 }
 
+///////////////////// Begin https://github.com/Alamofire/Alamofire/blob/master/Source/Alamofire.swift
 class URLUtil {
-    ///////////////////// Begin https://github.com/Alamofire/Alamofire/blob/master/Source/Alamofire.swift
     class func makeQueryString(parameters: [String: AnyObject]) -> String {
         var components: [(String, String)] = []
         for key in sorted(Array(parameters.keys), <) {
@@ -191,13 +232,8 @@ class URLUtil {
         return components
     }
 
-    class func encode(data: AnyObject, format: MyAPIBodyFormat) {
-    }
-    
-    
     class func escape(string: String) -> String {
         let legalURLCharactersToBeEscaped: CFStringRef = ":/?&=;+!@#$()',*"
         return CFURLCreateStringByAddingPercentEscapes(nil, string, nil, legalURLCharactersToBeEscaped, CFStringBuiltInEncodings.UTF8.rawValue)
     }
-    ///////////////////// END
 }
