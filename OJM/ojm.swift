@@ -23,6 +23,13 @@ private func decodeOptional(obj: AnyObject?) -> AnyObject? {
     }
 }
 
+func JsonGenObjectFromJsonData(data: NSData!) -> AnyObject? {
+    if data == nil {
+        return nil
+    }
+    return NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: nil)
+}
+
 public class JsonGenEntityBase {
     public init() {
     }
@@ -54,11 +61,7 @@ public class JsonGenEntityBase {
     }
 
     public class func fromData(data: NSData!) -> AnyObject? {
-        if data == nil {
-            return nil
-        }
-
-        var object = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: nil) as? NSObject
+        var object:AnyObject? = JsonGenObjectFromJsonData(data)
         switch object {
         case let hash as NSDictionary:
             return fromJsonDictionary(hash)
@@ -67,7 +70,7 @@ public class JsonGenEntityBase {
             return fromJsonArray(array)
 
         default:
-            return nil
+            return object
         }
     }
 
