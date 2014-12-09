@@ -29,15 +29,12 @@ public class GetItem : YOUSEI_API_GENERATOR_PREFIX_Base {
 
         // Convert PATH
         var path = apiRequest.info.path
-        if let x:AnyObject = query["user_id"] {
-            path.stringByReplacingOccurrencesOfString("{user_id}", withString: URLUtil.escape("\(x)"))
-            query.removeValueForKey("user_id")
-        }
+        path = replacePathPlaceholder(path, key: "user_id")
         apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
         return self
     }
 
-    func call(completionHandler: ((YOUSEI_API_GENERATOR_PREFIX_Response, [Item]?) -> Void)) {
+    func call(completionHandler: (YOUSEI_API_GENERATOR_PREFIX_Response, [Item]?) -> Void) {
         doRequest() { response in
             completionHandler(response, Item.fromData(response.data) as? [Item])
         }
