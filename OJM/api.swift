@@ -5,7 +5,7 @@ private func encode(obj: AnyObject?) -> AnyObject {
     case nil:
         return NSNull()
         
-    case let ojmObject as JsonGenEntityBase:
+    case let ojmObject as QiitaEntityBase:
         return ojmObject.toJsonDictionary()
         
     default:
@@ -30,7 +30,7 @@ func JsonGenObjectFromJsonData(data: NSData!) -> AnyObject? {
     return NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: nil)
 }
 
-public class JsonGenEntityBase {
+public class QiitaEntityBase {
     public init() {
     }
 
@@ -38,26 +38,26 @@ public class JsonGenEntityBase {
         return NSDictionary()
     }
 
-    public class func toJsonArray(entityList: [JsonGenEntityBase]) -> NSArray {
+    public class func toJsonArray(entityList: [QiitaEntityBase]) -> NSArray {
         return entityList.map {x in encode(x)}
     }
 
-    public class func toJsonData(entityList: [JsonGenEntityBase], pritty: Bool = false) -> NSData {
+    public class func toJsonData(entityList: [QiitaEntityBase], pretty: Bool = false) -> NSData {
         var obj = toJsonArray(entityList)
-        return toJson(obj, pritty: pritty)
+        return toJson(obj, pretty: pretty)
     }
 
-    public func toJsonData(pritty: Bool = false) -> NSData {
+    public func toJsonData(pretty: Bool = false) -> NSData {
         var obj = toJsonDictionary()
-        return JsonGenEntityBase.toJson(obj, pritty: pritty)
+        return QiitaEntityBase.toJson(obj, pretty: pretty)
     }
 
-    public class func toJsonString(entityList: [JsonGenEntityBase], pritty: Bool = false) -> NSString {
-        return NSString(data: toJsonData(entityList, pritty: pritty), encoding: NSUTF8StringEncoding)!
+    public class func toJsonString(entityList: [QiitaEntityBase], pretty: Bool = false) -> NSString {
+        return NSString(data: toJsonData(entityList, pretty: pretty), encoding: NSUTF8StringEncoding)!
     }
 
-    public func toJsonString(pritty: Bool = false) -> NSString {
-        return NSString(data: toJsonData(pritty: pritty), encoding: NSUTF8StringEncoding)!
+    public func toJsonString(pretty: Bool = false) -> NSString {
+        return NSString(data: toJsonData(pretty: pretty), encoding: NSUTF8StringEncoding)!
     }
 
     public class func fromData(data: NSData!) -> AnyObject? {
@@ -74,15 +74,15 @@ public class JsonGenEntityBase {
         }
     }
 
-    public class func fromJsonDictionary(hash: NSDictionary?) -> JsonGenEntityBase? {
+    public class func fromJsonDictionary(hash: NSDictionary?) -> QiitaEntityBase? {
         return nil
     }
 
-    public class func fromJsonArray(array: NSArray?) -> [JsonGenEntityBase]? {
+    public class func fromJsonArray(array: NSArray?) -> [QiitaEntityBase]? {
         if array == nil {
             return nil
         }
-        var ret = [JsonGenEntityBase]()
+        var ret = [QiitaEntityBase]()
         if let xx = array as? [NSDictionary] {
             for x in xx {
                 if let obj = fromJsonDictionary(x) {
@@ -97,13 +97,13 @@ public class JsonGenEntityBase {
         return ret
     }
 
-    private class func toJson(obj: NSObject, pritty: Bool = false) -> NSData {
-        let options = pritty ? NSJSONWritingOptions.PrettyPrinted : NSJSONWritingOptions.allZeros
+    private class func toJson(obj: NSObject, pretty: Bool = false) -> NSData {
+        let options = pretty ? NSJSONWritingOptions.PrettyPrinted : NSJSONWritingOptions.allZeros
         return NSJSONSerialization.dataWithJSONObject(obj, options: options, error: nil)!
     }
 }
 
-public class QiitaTag : JsonGenEntityBase {
+public class QiitaTag : QiitaEntityBase {
     var name: String = ""
     var versions: [String] = [String]()
 
@@ -140,7 +140,7 @@ public class QiitaTag : JsonGenEntityBase {
     }
 }
 
-public class QiitaItem : JsonGenEntityBase {
+public class QiitaItem : QiitaEntityBase {
     var body: String = ""
     var coediting: Bool = false
     var createdAt: String = ""
@@ -261,7 +261,7 @@ public class QiitaItem : JsonGenEntityBase {
     }
 }
 
-public class QiitaUser : JsonGenEntityBase {
+public class QiitaUser : QiitaEntityBase {
     var description: String?
     var facebookId: String?
     var followeesCount: Int = 0
@@ -539,15 +539,15 @@ public class QiitaAPIBase {
         }
 
         switch(config.bodyFormat, object) {
-        case (.FormURLEncoded, let x as JsonGenEntityBase):
+        case (.FormURLEncoded, let x as QiitaEntityBase):
             let str = URLUtil.makeQueryString(x.toJsonDictionary() as [String:AnyObject])
             self.body = str.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
             
-        case (.JSON, let x as JsonGenEntityBase):
+        case (.JSON, let x as QiitaEntityBase):
             self.body = x.toJsonData()
             
-        case (.JSON, let x as [JsonGenEntityBase]):
-            self.body = JsonGenEntityBase.toJsonData(x)
+        case (.JSON, let x as [QiitaEntityBase]):
+            self.body = QiitaEntityBase.toJsonData(x)
 
         case (_, let x as NSData):
             self.body = x
@@ -711,7 +711,7 @@ public class QiitaAPIGetItem : QiitaAPIBase {
 }
 
 public class QiitaAPIPostItem : QiitaAPIBase {
-    public class Body : JsonGenEntityBase {
+    public class Body : QiitaEntityBase {
         var body: String = ""
         var coediting: Bool = false
         var gist: Bool?
@@ -822,7 +822,7 @@ public class QiitaAPIPostItem : QiitaAPIBase {
 }
 
 public class QiitaAPIPatchItem : QiitaAPIBase {
-    public class Body : JsonGenEntityBase {
+    public class Body : QiitaEntityBase {
         var body: String = ""
         var coediting: Bool = false
         var `private`: Bool = false
@@ -919,7 +919,7 @@ public class QiitaAPIPatchItem : QiitaAPIBase {
 }
 
 public class QiitaAPISamplePut : QiitaAPIBase {
-    public class Response : JsonGenEntityBase {
+    public class Response : QiitaEntityBase {
         var count: Int = 0
         var tags: [QiitaTag] = [QiitaTag]()
 
@@ -1017,7 +1017,7 @@ public class QiitaAPISamplePatch : QiitaAPIBase {
 }
 
 public class QiitaAPISamplePostBinary : QiitaAPIBase {
-    public class Response : JsonGenEntityBase {
+    public class Response : QiitaEntityBase {
         var url: String = ""
 
         public override func toJsonDictionary() -> NSDictionary {

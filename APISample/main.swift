@@ -13,7 +13,7 @@ private let apiFactory = QiitaAPIFactory(config: config)
 
 apiFactory.createListItem().setup().call { res, items in
     if let sureItems = items {
-        println(QiitaItem.toJsonString(sureItems, pritty: true))
+        println(QiitaItem.toJsonString(sureItems, pretty: true))
     } else {
         println("Items parse error")
     }
