@@ -8,9 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BE5FCCC91A34186F009C8FD9 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5FCCC81A34186F009C8FD9 /* main.swift */; };
-		BE5FCCD01A341952009C8FD9 /* sample.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5FCCCF1A341952009C8FD9 /* sample.swift */; };
-		BE5FCCD31A346AC3009C8FD9 /* ojm.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5FCCD21A346ABE009C8FD9 /* ojm.swift */; };
-		BE5FCCD51A346D40009C8FD9 /* api.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5FCCD41A346D40009C8FD9 /* api.swift */; };
+		BE8561BA1A36E8E1009EB2C3 /* api.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8561B91A36E8E1009EB2C3 /* api.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,9 +26,7 @@
 /* Begin PBXFileReference section */
 		BE5FCCC51A34186F009C8FD9 /* APISample */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = APISample; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE5FCCC81A34186F009C8FD9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		BE5FCCCF1A341952009C8FD9 /* sample.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = sample.swift; sourceTree = "<group>"; };
-		BE5FCCD21A346ABE009C8FD9 /* ojm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ojm.swift; sourceTree = "<group>"; };
-		BE5FCCD41A346D40009C8FD9 /* api.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = api.swift; sourceTree = "<group>"; };
+		BE8561B91A36E8E1009EB2C3 /* api.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = api.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,8 +61,6 @@
 			isa = PBXGroup;
 			children = (
 				BE5FCCC81A34186F009C8FD9 /* main.swift */,
-				BE5FCCCF1A341952009C8FD9 /* sample.swift */,
-				BE5FCCD41A346D40009C8FD9 /* api.swift */,
 			);
 			path = APISample;
 			sourceTree = "<group>";
@@ -74,7 +68,7 @@
 		BE5FCCD11A346ABE009C8FD9 /* OJM */ = {
 			isa = PBXGroup;
 			children = (
-				BE5FCCD21A346ABE009C8FD9 /* ojm.swift */,
+				BE8561B91A36E8E1009EB2C3 /* api.swift */,
 			);
 			path = OJM;
 			sourceTree = "<group>";
@@ -135,10 +129,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE8561BA1A36E8E1009EB2C3 /* api.swift in Sources */,
 				BE5FCCC91A34186F009C8FD9 /* main.swift in Sources */,
-				BE5FCCD31A346AC3009C8FD9 /* ojm.swift in Sources */,
-				BE5FCCD51A346D40009C8FD9 /* api.swift in Sources */,
-				BE5FCCD01A341952009C8FD9 /* sample.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,16 +8,23 @@
 
 import Foundation
 
-private let config = YOUSEI_API_GENERATOR_PREFIX_Config(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
-private let apiFactory = Factory(config: config)
-private let itemAPI = apiFactory.createGetItem()
+private let config = QiitaAPIConfig(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
+private let apiFactory = QiitaAPIFactory(config: config)
 
-itemAPI.setup().call() { (response, items) in
+apiFactory.createListItem().setup().call { res, items in
     if let sureItems = items {
-        println(Item.toJsonString(sureItems, pritty: true))
+        println(QiitaItem.toJsonString(sureItems, pritty: true))
     } else {
         println("Items parse error")
     }
 }
+
+//itemAPI.setup().call() { (response, items) in
+//    if let sureItems = items {
+//        println(Item.toJsonString(sureItems, pritty: true))
+//    } else {
+//        println("Items parse error")
+//    }
+//}
 
 CFRunLoopRun()
