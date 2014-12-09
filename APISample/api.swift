@@ -21,38 +21,23 @@ public class GetItem : YOUSEI_API_GENERATOR_PREFIX_Base {
         super.init(config: config, info: apiInfo)
     }
     
-    public class Params {
-        public var page: Int?
-        public var perPage: Int?
-        public var userId: Int?
-        
-        public init(page: Int? = nil, perPage: Int? = nil, userId: Int? = nil) {
-            self.page = page
-            self.perPage = perPage
-            self.userId = userId
-        }
-        
-        public func toDictionary() -> [String:AnyObject] {
-            var ret = [String:AnyObject]()
-            if let x = page { ret["page"] = x }
-            if let x = perPage { ret["per_page"] = x }
-            if let x = userId { ret["user_id"] = x }
-            return ret
-        }
-    }
+    func setup(page: Int? = nil, perPage: Int? = nil, userId: Int? = nil) -> GetItem {
+        query = [String:AnyObject]()
+        if let x = page { query["page"] = x }
+        if let x = perPage { query["per_page"] = x }
+        if let x = userId { query["user_id"] = x }
 
-    func call(params: Params, completionHandler: ((YOUSEI_API_GENERATOR_PREFIX_Response, [Item]?) -> Void)) {
-        query = params.toDictionary()
-        
-        var path = apiRequest.info.path
         // Convert PATH
+        var path = apiRequest.info.path
         if let x:AnyObject = query["user_id"] {
             path.stringByReplacingOccurrencesOfString("{user_id}", withString: URLUtil.escape("\(x)"))
             query.removeValueForKey("user_id")
         }
         apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
-        
-        // Do Request
+        return self
+    }
+
+    func call(completionHandler: ((YOUSEI_API_GENERATOR_PREFIX_Response, [Item]?) -> Void)) {
         doRequest() { response in
             completionHandler(response, Item.fromData(response.data) as? [Item])
         }
@@ -80,18 +65,7 @@ public class SomePost : YOUSEI_API_GENERATOR_PREFIX_Base {
         }
     }
     
-    func call(params: Params, object: User, completionHandler: ((YOUSEI_API_GENERATOR_PREFIX_Response, [Item]?) -> Void)) {
-        query = params.toDictionary()
-        
-        var path = apiRequest.info.path
-        // Convert PATH
-        if let x:AnyObject = query["user_id"] {
-            path.stringByReplacingOccurrencesOfString("{user_id}", withString: URLUtil.escape("\(x)"))
-            query.removeValueForKey("user_id")
-        }
-        apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
-        
-        // Do Request
+    func call(object: User, completionHandler: ((YOUSEI_API_GENERATOR_PREFIX_Response, [Item]?) -> Void)) {
         doRequest(object) { response in
             completionHandler(response, Item.fromData(response.data) as? [Item])
         }
