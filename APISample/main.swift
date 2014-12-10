@@ -18,10 +18,8 @@ class Sample {
         println(listItem.data())
         
         listItem.addObserver(self) { items, error in
-            items?.map { item in
-                println(item.title)
-            }
-            println(listItem.data(perPage: 3)?.count)
+            items?.map { item in println(item.title) }
+            println(listItem.data(perPage: 3)!.count)
             println(listItem.data(perPage: 4)?.count)
         }
         

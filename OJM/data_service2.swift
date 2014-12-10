@@ -948,6 +948,7 @@ public class QQQiitaAPIPatchItem : QQQiitaAPIBase {
 
 public class QQQiitaDS<ET> {
     public typealias NotificationHandler = (ET?, QQQiitaDSStatus?) -> Void
+    public var requestedObjectConverter: ET? -> ET? = { $0 }
 
     let factory: QQQiitaAPIFactory
     public init(factory: QQQiitaAPIFactory) {
@@ -1038,7 +1039,8 @@ public class QQQiitaDSListItem<ET> : QQQiitaDS<ET> {
     }
 
     public func request(page: Int? = nil, perPage: Int? = nil) {
-        factory.createListItem().setup(page: page, perPage: perPage).call { res, object in
+        factory.createListItem().setup(page: page, perPage: perPage).call { res, o in
+            var object = self.requestedObjectConverter(o)
             if let x = object {
                 let key = self.cacheKeyFor(page: page, perPage: perPage)
                 self.storeInCache(key, object: x)
@@ -1067,7 +1069,8 @@ public class QQQiitaDSGetItem<ET> : QQQiitaDS<ET> {
     }
 
     public func request(#id: String) {
-        factory.createGetItem().setup(id: id).call { res, object in
+        factory.createGetItem().setup(id: id).call { res, o in
+            var object = self.requestedObjectConverter(o)
             if let x = object {
                 let key = self.cacheKeyFor(id: id)
                 self.storeInCache(key, object: x)
