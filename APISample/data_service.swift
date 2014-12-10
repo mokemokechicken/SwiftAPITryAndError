@@ -8,13 +8,30 @@
 
 import Foundation
 
-public class DataService<ET:AnyObject> {
-    public typealias ET = QiitaItem
-    public typealias Handler = (ET) -> Void
-    private var observers = [(AnyObject,Handler)]()
+let f = QiitaAPIFactory(config: QiitaAPIConfig(baseURL: NSURL(string: "")!))
+
+public class QiitaServiceLocator {
+    public init() {}
+    public var dataServiceGetItem: QiitaDataServiceGetItem<QiitaItem>!
+
+    public convenience init(factory: QiitaAPIFactory) {
+        self.init()
+        self.dataServiceGetItem = QiitaDataServiceGetItem(factory: f)
+    }
+}
+
+public class QiitaDataService<ET:AnyObject> {
+    public typealias NotificationHandler = (ET?, NSError?) -> Void
+
+    private var observers = [(AnyObject, NotificationHandler)]()
+
     let factory: QiitaAPIFactory
     
-    public func addObserver(object: AnyObject, handler: Handler) {
+    public init(factory: QiitaAPIFactory) {
+        self.factory = factory
+    }
+
+    public func addObserver(object: AnyObject, handler: NotificationHandler) {
         observers.append((object, handler))
     }
     
@@ -22,39 +39,27 @@ public class DataService<ET:AnyObject> {
         observers = observers.filter { $0.0 !== object}
     }
     
-    private func observedBy(object: AnyObject) -> Bool {
-        for o in observers {
-            if o.0 === object {
-                return true
-            }
-        }
-        return false
-    }
-    
-    public func notify(data: ET) {
+    public func notify(data: ET?, error: NSError?) {
         for observer in observers {
-            observer.1(data)
-        }
-    }
-    
-    public func get(params: AnyObject) -> ET? {
-        return nil
-    }
-    
-    public init(factory: QiitaAPIFactory) {
-        self.factory = factory
-    }
-    
-    public func requestBy(client: AnyObject, id: String, body: AnyObject, handler: (NSError?, ET?) -> Void) {
-        factory.createGetItem().setup(id: id).call { res, item in
-            if self.observedBy(client) {
-                handler(res.error, item)
-            }
-            if let e = item {
-                self.notify(e)
-            }
+            observer.1(data, error)
         }
     }
 }
 
+public class QiitaDataServiceGetItem<ET:QiitaItem> : QiitaDataService<ET> {
+    public typealias ET = QiitaItem
 
+    public override init(factory: QiitaAPIFactory) {
+        super.init(factory: factory)
+    }
+
+    public func findInCache(params: AnyObject) -> ET? {
+        return nil
+    }
+
+    public func request(_body_: AnyObject, id: String) {
+        factory.createGetItem().setup(id: id).call { res, item in
+            self.notify(item, error: res.error)
+        }
+    }
+}
