@@ -1,25 +1,3 @@
-//
-//  data_service.swift
-//  APISample
-//
-//  Created by 森下 健 on 2014/12/10.
-//  Copyright (c) 2014年 Yumemi. All rights reserved.
-//
-
-import Foundation
-
-let f = QiitaAPIFactory(config: QiitaAPIConfig(baseURL: NSURL(string: "")!))
-
-public class QiitaServiceLocator {
-    public init() {}
-    public var dataServiceGetItem: QiitaDataServiceGetItem<QiitaItem>!
-
-    public convenience init(factory: QiitaAPIFactory) {
-        self.init()
-        self.dataServiceGetItem = QiitaDataServiceGetItem(factory: f)
-    }
-}
-
 public class QiitaDataService<ET:AnyObject> {
     public typealias NotificationHandler = (ET?, NSError?) -> Void
 
@@ -43,6 +21,22 @@ public class QiitaDataService<ET:AnyObject> {
         for observer in observers {
             observer.1(data, error)
         }
+    }
+}
+
+
+
+import Foundation
+
+let f = QiitaAPIFactory(config: QiitaAPIConfig(baseURL: NSURL(string: "")!))
+
+public class QiitaServiceLocator {
+    public init() {}
+    public var dataServiceGetItem: QiitaDataServiceGetItem<QiitaItem>!
+    
+    public convenience init(factory: QiitaAPIFactory) {
+        self.init()
+        self.dataServiceGetItem = QiitaDataServiceGetItem(factory: f)
     }
 }
 
