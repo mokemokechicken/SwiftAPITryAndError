@@ -11,20 +11,11 @@ import Foundation
 private let config = QiitaAPIConfig(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
 private let apiFactory = QiitaAPIFactory(config: config)
 
-apiFactory.createListItem().setup().call { res, items in
-    if let sureItems = items {
-        println(QiitaItem.toJsonString(sureItems, pretty: true))
-    } else {
-        println("Items parse error")
+apiFactory.createListItem().setup(perPage: 3).call { res, items in
+    items?.map { item in
+        println("\(item.user.id): \(item.title)")
     }
+    return
 }
-
-//itemAPI.setup().call() { (response, items) in
-//    if let sureItems = items {
-//        println(Item.toJsonString(sureItems, pritty: true))
-//    } else {
-//        println("Items parse error")
-//    }
-//}
 
 CFRunLoopRun()
