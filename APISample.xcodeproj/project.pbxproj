@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BE1611E91A37BB7E002F55A8 /* data_service.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1611E81A37BB7E002F55A8 /* data_service.swift */; };
+		BE1611EB1A37EBE8002F55A8 /* data_service2.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1611EA1A37EBE8002F55A8 /* data_service2.swift */; };
 		BE5FCCC91A34186F009C8FD9 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5FCCC81A34186F009C8FD9 /* main.swift */; };
 		BE8561BA1A36E8E1009EB2C3 /* api.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8561B91A36E8E1009EB2C3 /* api.swift */; };
 /* End PBXBuildFile section */
@@ -24,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BE1611E81A37BB7E002F55A8 /* data_service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = data_service.swift; sourceTree = "<group>"; };
+		BE1611EA1A37EBE8002F55A8 /* data_service2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = data_service2.swift; sourceTree = "<group>"; };
 		BE5FCCC51A34186F009C8FD9 /* APISample */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = APISample; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE5FCCC81A34186F009C8FD9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BE8561B91A36E8E1009EB2C3 /* api.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = api.swift; sourceTree = "<group>"; };
@@ -61,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				BE5FCCC81A34186F009C8FD9 /* main.swift */,
+				BE1611E81A37BB7E002F55A8 /* data_service.swift */,
 			);
 			path = APISample;
 			sourceTree = "<group>";
@@ -68,6 +73,7 @@
 		BE5FCCD11A346ABE009C8FD9 /* OJM */ = {
 			isa = PBXGroup;
 			children = (
+				BE1611EA1A37EBE8002F55A8 /* data_service2.swift */,
 				BE8561B91A36E8E1009EB2C3 /* api.swift */,
 			);
 			path = OJM;
@@ -130,6 +136,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE8561BA1A36E8E1009EB2C3 /* api.swift in Sources */,
+				BE1611E91A37BB7E002F55A8 /* data_service.swift in Sources */,
+				BE1611EB1A37EBE8002F55A8 /* data_service2.swift in Sources */,
 				BE5FCCC91A34186F009C8FD9 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -215,6 +223,7 @@
 		BE5FCCCD1A34186F009C8FD9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -222,7 +231,9 @@
 		BE5FCCCE1A34186F009C8FD9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
 		};

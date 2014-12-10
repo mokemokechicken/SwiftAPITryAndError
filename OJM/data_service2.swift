@@ -5,7 +5,7 @@ private func encode(obj: AnyObject?) -> AnyObject {
     case nil:
         return NSNull()
         
-    case let ojmObject as QiitaEntityBase:
+    case let ojmObject as QQQiitaEntityBase:
         return ojmObject.toJsonDictionary()
         
     default:
@@ -30,7 +30,7 @@ private func JsonGenObjectFromJsonData(data: NSData!) -> AnyObject? {
     return NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: nil)
 }
 
-public class QiitaEntityBase {
+public class QQQiitaEntityBase {
     public init() {
     }
 
@@ -38,21 +38,21 @@ public class QiitaEntityBase {
         return NSDictionary()
     }
 
-    public class func toJsonArray(entityList: [QiitaEntityBase]) -> NSArray {
+    public class func toJsonArray(entityList: [QQQiitaEntityBase]) -> NSArray {
         return entityList.map {x in encode(x)}
     }
 
-    public class func toJsonData(entityList: [QiitaEntityBase], pretty: Bool = false) -> NSData {
+    public class func toJsonData(entityList: [QQQiitaEntityBase], pretty: Bool = false) -> NSData {
         var obj = toJsonArray(entityList)
         return toJson(obj, pretty: pretty)
     }
 
     public func toJsonData(pretty: Bool = false) -> NSData {
         var obj = toJsonDictionary()
-        return QiitaEntityBase.toJson(obj, pretty: pretty)
+        return QQQiitaEntityBase.toJson(obj, pretty: pretty)
     }
 
-    public class func toJsonString(entityList: [QiitaEntityBase], pretty: Bool = false) -> NSString {
+    public class func toJsonString(entityList: [QQQiitaEntityBase], pretty: Bool = false) -> NSString {
         return NSString(data: toJsonData(entityList, pretty: pretty), encoding: NSUTF8StringEncoding)!
     }
 
@@ -74,15 +74,15 @@ public class QiitaEntityBase {
         }
     }
 
-    public class func fromJsonDictionary(hash: NSDictionary?) -> QiitaEntityBase? {
+    public class func fromJsonDictionary(hash: NSDictionary?) -> QQQiitaEntityBase? {
         return nil
     }
 
-    public class func fromJsonArray(array: NSArray?) -> [QiitaEntityBase]? {
+    public class func fromJsonArray(array: NSArray?) -> [QQQiitaEntityBase]? {
         if array == nil {
             return nil
         }
-        var ret = [QiitaEntityBase]()
+        var ret = [QQQiitaEntityBase]()
         if let xx = array as? [NSDictionary] {
             for x in xx {
                 if let obj = fromJsonDictionary(x) {
@@ -103,7 +103,7 @@ public class QiitaEntityBase {
     }
 }
 
-public class QiitaTag : QiitaEntityBase {
+public class QQQiitaTag : QQQiitaEntityBase {
     var name: String = ""
     var versions: [String] = [String]()
 
@@ -116,9 +116,9 @@ public class QiitaTag : QiitaEntityBase {
         return hash
     }
 
-    public override class func fromJsonDictionary(hash: NSDictionary?) -> QiitaTag? {
+    public override class func fromJsonDictionary(hash: NSDictionary?) -> QQQiitaTag? {
         if let h = hash {
-            var this = QiitaTag()
+            var this = QQQiitaTag()
             // Decode name
             if let x = h["name"] as? String {
                 this.name = x
@@ -140,17 +140,17 @@ public class QiitaTag : QiitaEntityBase {
     }
 }
 
-public class QiitaItem : QiitaEntityBase {
+public class QQQiitaItem : QQQiitaEntityBase {
     var body: String = ""
     var coediting: Bool = false
     var createdAt: String = ""
     var id: String = ""
     var `private`: Bool?
-    var tags: [QiitaTag] = [QiitaTag]()
+    var tags: [QQQiitaTag] = [QQQiitaTag]()
     var title: String = ""
     var updatedAt: String = ""
     var url: String = ""
-    var user: QiitaUser = QiitaUser()
+    var user: QQQiitaUser = QQQiitaUser()
 
     public override func toJsonDictionary() -> NSDictionary {
         var hash = NSMutableDictionary()
@@ -180,9 +180,9 @@ public class QiitaItem : QiitaEntityBase {
         return hash
     }
 
-    public override class func fromJsonDictionary(hash: NSDictionary?) -> QiitaItem? {
+    public override class func fromJsonDictionary(hash: NSDictionary?) -> QQQiitaItem? {
         if let h = hash {
-            var this = QiitaItem()
+            var this = QQQiitaItem()
             // Decode body
             if let x = h["body"] as? String {
                 this.body = x
@@ -216,7 +216,7 @@ public class QiitaItem : QiitaEntityBase {
             // Decode tags
             if let xx = h["tags"] as? [NSDictionary] {
                 for x in xx {
-                    if let obj = QiitaTag.fromJsonDictionary(x) {
+                    if let obj = QQQiitaTag.fromJsonDictionary(x) {
                         this.tags.append(obj)
                     } else {
                         return nil
@@ -248,7 +248,7 @@ public class QiitaItem : QiitaEntityBase {
             }
 
             // Decode user
-            if let x = QiitaUser.fromJsonDictionary((h["user"] as? NSDictionary)) {
+            if let x = QQQiitaUser.fromJsonDictionary((h["user"] as? NSDictionary)) {
                 this.user = x
             } else {
                 return nil
@@ -261,7 +261,7 @@ public class QiitaItem : QiitaEntityBase {
     }
 }
 
-public class QiitaUser : QiitaEntityBase {
+public class QQQiitaUser : QQQiitaEntityBase {
     var description: String?
     var facebookId: String?
     var followeesCount: Int = 0
@@ -340,9 +340,9 @@ public class QiitaUser : QiitaEntityBase {
         return hash
     }
 
-    public override class func fromJsonDictionary(hash: NSDictionary?) -> QiitaUser? {
+    public override class func fromJsonDictionary(hash: NSDictionary?) -> QQQiitaUser? {
         if let h = hash {
-            var this = QiitaUser()
+            var this = QQQiitaUser()
             // Decode description
             this.description = h["description"] as? String
             // Decode facebookId
@@ -398,6 +398,43 @@ public class QiitaUser : QiitaEntityBase {
     }
 }
 
+public class QQQiitaAPIError : QQQiitaEntityBase {
+    var message: String = ""
+    var type: String = ""
+
+    public override func toJsonDictionary() -> NSDictionary {
+        var hash = NSMutableDictionary()
+        // Encode message
+        hash["message"] = encode(self.message)
+        // Encode type
+        hash["type"] = encode(self.type)
+        return hash
+    }
+
+    public override class func fromJsonDictionary(hash: NSDictionary?) -> QQQiitaAPIError? {
+        if let h = hash {
+            var this = QQQiitaAPIError()
+            // Decode message
+            if let x = h["message"] as? String {
+                this.message = x
+            } else {
+                return nil
+            }
+
+            // Decode type
+            if let x = h["type"] as? String {
+                this.type = x
+            } else {
+                return nil
+            }
+
+            return this
+        } else {
+            return nil
+        }
+    }
+}
+
 private func try<T>(x: T?, handler: (T) -> Void) {
     if let xx = x {
         handler(xx)
@@ -412,45 +449,45 @@ private func try<T>(x: T?, handler: (T) -> Any?) -> Any? {
 }
 
 
-public enum QiitaAPIBodyFormat {
+public enum QQQiitaAPIBodyFormat {
     case JSON, FormURLEncoded
 }
 
 // APIの実行時の挙動を操作するためのもの
-public protocol QiitaAPIConfigProtocol {
+public protocol QQQiitaAPIConfigProtocol {
     var baseURL: NSURL { get }
-    var bodyFormat: QiitaAPIBodyFormat { get }
+    var bodyFormat: QQQiitaAPIBodyFormat { get }
     var userAgent: String? { get }
     var queue: dispatch_queue_t { get }
     
-    func configureRequest(apiRequest: QiitaAPIRequest)
-    func beforeRequest(apiRequest: QiitaAPIRequest)
-    func afterResponse(apiResponse: QiitaAPIResponse)
+    func configureRequest(apiRequest: QQQiitaAPIRequest)
+    func beforeRequest(apiRequest: QQQiitaAPIRequest)
+    func afterResponse(apiResponse: QQQiitaAPIResponse)
     func log(str: String?)
 }
 
-public class QiitaAPIConfig : QiitaAPIConfigProtocol {
+public class QQQiitaAPIConfig : QQQiitaAPIConfigProtocol {
     public let baseURL: NSURL
-    public let bodyFormat: QiitaAPIBodyFormat
+    public let bodyFormat: QQQiitaAPIBodyFormat
     public let queue: dispatch_queue_t
     public var userAgent: String?
     
-    public init(baseURL: NSURL, bodyFormat: QiitaAPIBodyFormat? = nil, queue: NSOperationQueue? = nil) {
+    public init(baseURL: NSURL, bodyFormat: QQQiitaAPIBodyFormat? = nil, queue: NSOperationQueue? = nil) {
         self.baseURL = baseURL
         self.bodyFormat = bodyFormat ?? .JSON
         self.queue = queue ?? dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
     }
     
     public func log(str: String?) {
-        NSLog("\(str)")
+        if let x = str { NSLog(x) }
     }
     
-    public func configureRequest(apiRequest: QiitaAPIRequest) {
+    public func configureRequest(apiRequest: QQQiitaAPIRequest) {
         apiRequest.request.setValue("gzip;q=1.0,compress;q=0.5", forHTTPHeaderField: "Accept-Encoding")
         try(userAgent) { ua in apiRequest.request.setValue(ua, forHTTPHeaderField: "User-Agent") }
     }
     
-    public func beforeRequest(apiRequest: QiitaAPIRequest) {
+    public func beforeRequest(apiRequest: QQQiitaAPIRequest) {
         let method = apiRequest.info.method
         if method == .POST || method == .PUT || method == .PATCH {
             switch bodyFormat {
@@ -461,20 +498,20 @@ public class QiitaAPIConfig : QiitaAPIConfigProtocol {
             }
         }
     }
-    public func afterResponse(apiResponse: QiitaAPIResponse) {}
+    public func afterResponse(apiResponse: QQQiitaAPIResponse) {}
 }
 
-public protocol QiitaAPIEntityProtocol {
+public protocol QQQiitaAPIEntityProtocol {
     func toJsonDictionary() -> NSDictionary
     func toJsonData() -> NSData
     func toJsonString() -> NSString
     
-    class func fromData(data: NSData!) -> QiitaAPIEntityProtocol?
-    class func fromJsonDictionary(hash: NSDictionary?) -> QiitaAPIEntityProtocol?
+    class func fromData(data: NSData!) -> QQQiitaAPIEntityProtocol?
+    class func fromJsonDictionary(hash: NSDictionary?) -> QQQiitaAPIEntityProtocol?
 }
 
 // API定義から作られる静的な情報、を動的に参照するためのもの
-public class QiitaAPIInfo {
+public class QQQiitaAPIInfo {
     public enum HTTPMethod : String {
         case GET    = "GET"
         case POST   = "POST"
@@ -494,22 +531,22 @@ public class QiitaAPIInfo {
     }
 }
 
-public class QiitaAPIRequest {
+public class QQQiitaAPIRequest {
     public let request = NSMutableURLRequest()
-    public let info : QiitaAPIInfo
+    public let info : QQQiitaAPIInfo
     
-    public init(info: QiitaAPIInfo) {
+    public init(info: QQQiitaAPIInfo) {
         self.info = info
     }
 }
 
-public class QiitaAPIResponse {
+public class QQQiitaAPIResponse {
     public let response: NSHTTPURLResponse?
     public let error: NSError?
-    public let request: QiitaAPIRequest
+    public let request: QQQiitaAPIRequest
     public let data: NSData?
     
-    public init(request: QiitaAPIRequest, response: NSHTTPURLResponse?, data: NSData?, error: NSError?) {
+    public init(request: QQQiitaAPIRequest, response: NSHTTPURLResponse?, data: NSData?, error: NSError?) {
         self.request = request
         self.response = response
         self.data = data
@@ -517,18 +554,18 @@ public class QiitaAPIResponse {
     }
 }
 
-public class QiitaAPIBase {
-    public typealias CompletionHandler = (QiitaAPIResponse) -> Void
+public class QQQiitaAPIBase {
+    public typealias CompletionHandler = (QQQiitaAPIResponse) -> Void
     
-    public var config: QiitaAPIConfigProtocol
-    public let apiRequest : QiitaAPIRequest
+    public var config: QQQiitaAPIConfigProtocol
+    public let apiRequest : QQQiitaAPIRequest
     public var handlerQueue: dispatch_queue_t?
     public var query = [String:AnyObject]()
     public var body: NSData?
     
-    public init(config: QiitaAPIConfigProtocol, info: QiitaAPIInfo) {
+    public init(config: QQQiitaAPIConfigProtocol, info: QQQiitaAPIInfo) {
         self.config = config
-        self.apiRequest = QiitaAPIRequest(info: info)
+        self.apiRequest = QQQiitaAPIRequest(info: info)
     }
     
     func setBody(object: AnyObject) {
@@ -539,15 +576,15 @@ public class QiitaAPIBase {
         }
 
         switch(config.bodyFormat, object) {
-        case (.FormURLEncoded, let x as QiitaEntityBase):
+        case (.FormURLEncoded, let x as QQQiitaEntityBase):
             let str = URLUtil.makeQueryString(x.toJsonDictionary() as [String:AnyObject])
             self.body = str.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
             
-        case (.JSON, let x as QiitaEntityBase):
+        case (.JSON, let x as QQQiitaEntityBase):
             self.body = x.toJsonData()
             
-        case (.JSON, let x as [QiitaEntityBase]):
-            self.body = QiitaEntityBase.toJsonData(x)
+        case (.JSON, let x as [QQQiitaEntityBase]):
+            self.body = QQQiitaEntityBase.toJsonData(x)
 
         case (_, let x as NSData):
             self.body = x
@@ -590,7 +627,7 @@ public class QiitaAPIBase {
             var response: NSURLResponse?
             var error: NSError?
             var data = NSURLConnection.sendSynchronousRequest(self.apiRequest.request, returningResponse: &response, error: &error)
-            var apiResponse = QiitaAPIResponse(request: self.apiRequest, response: response as? NSHTTPURLResponse, data: data, error: error)
+            var apiResponse = QQQiitaAPIResponse(request: self.apiRequest, response: response as? NSHTTPURLResponse, data: data, error: error)
             self.config.afterResponse(apiResponse)
             dispatch_async(self.handlerQueue ?? dispatch_get_main_queue()) { // Thread周りは微妙。どうするといいだろう。
                 completionHandler(apiResponse)
@@ -634,42 +671,33 @@ private class URLUtil {
     }
 }
 
-public class QiitaAPIFactory {
-    public let config: QiitaAPIConfigProtocol
-    public init(config: QiitaAPIConfigProtocol) {
+public class QQQiitaAPIFactory {
+    public let config: QQQiitaAPIConfigProtocol
+    public init(config: QQQiitaAPIConfigProtocol) {
         self.config = config
     }
-    public func createListItem() -> QiitaAPIListItem {
-        return QiitaAPIListItem(config: config)
+    public func createListItem() -> QQQiitaAPIListItem {
+        return QQQiitaAPIListItem(config: config)
     }
-    public func createGetItem() -> QiitaAPIGetItem {
-        return QiitaAPIGetItem(config: config)
+    public func createGetItem() -> QQQiitaAPIGetItem {
+        return QQQiitaAPIGetItem(config: config)
     }
-    public func createPostItem() -> QiitaAPIPostItem {
-        return QiitaAPIPostItem(config: config)
+    public func createPostItem() -> QQQiitaAPIPostItem {
+        return QQQiitaAPIPostItem(config: config)
     }
-    public func createPatchItem() -> QiitaAPIPatchItem {
-        return QiitaAPIPatchItem(config: config)
-    }
-    public func createSamplePut() -> QiitaAPISamplePut {
-        return QiitaAPISamplePut(config: config)
-    }
-    public func createSamplePatch() -> QiitaAPISamplePatch {
-        return QiitaAPISamplePatch(config: config)
-    }
-    public func createSamplePostBinary() -> QiitaAPISamplePostBinary {
-        return QiitaAPISamplePostBinary(config: config)
+    public func createPatchItem() -> QQQiitaAPIPatchItem {
+        return QQQiitaAPIPatchItem(config: config)
     }
 }
 
-public class QiitaAPIListItem : QiitaAPIBase {
-    public init(config: QiitaAPIConfigProtocol) {
+public class QQQiitaAPIListItem : QQQiitaAPIBase {
+    public init(config: QQQiitaAPIConfigProtocol) {
         var meta = [String:AnyObject]()
-        let apiInfo = QiitaAPIInfo(method: .GET, path: "items", meta: meta)
+        let apiInfo = QQQiitaAPIInfo(method: .GET, path: "items", meta: meta)
         super.init(config: config, info: apiInfo)
     }
 
-    public func setup(page: Int? = nil, perPage: Int? = nil) -> QiitaAPIListItem {
+    public func setup(page: Int? = nil, perPage: Int? = nil) -> QQQiitaAPIListItem {
         query = [String:AnyObject]()
         if let x = page { query["page"] = x }
         if let x = perPage { query["per_page"] = x }
@@ -679,21 +707,21 @@ public class QiitaAPIListItem : QiitaAPIBase {
         return self
     }
 
-    public func call(completionHandler: (QiitaAPIResponse, [QiitaItem]?) -> Void) {
+    public func call(completionHandler: (QQQiitaAPIResponse, [QQQiitaItem]?) -> Void) {
         doRequest() { response in
-            completionHandler(response, QiitaItem.fromData(response.data) as? [QiitaItem])
+            completionHandler(response, QQQiitaItem.fromData(response.data) as? [QQQiitaItem])
         }
     }
 }
 
-public class QiitaAPIGetItem : QiitaAPIBase {
-    public init(config: QiitaAPIConfigProtocol) {
+public class QQQiitaAPIGetItem : QQQiitaAPIBase {
+    public init(config: QQQiitaAPIConfigProtocol) {
         var meta = [String:AnyObject]()
-        let apiInfo = QiitaAPIInfo(method: .GET, path: "items/{id}", meta: meta)
+        let apiInfo = QQQiitaAPIInfo(method: .GET, path: "items/{id}", meta: meta)
         super.init(config: config, info: apiInfo)
     }
 
-    public func setup(#id: String) -> QiitaAPIGetItem {
+    public func setup(#id: String) -> QQQiitaAPIGetItem {
         query = [String:AnyObject]()
         query["id"] = id
 
@@ -703,20 +731,20 @@ public class QiitaAPIGetItem : QiitaAPIBase {
         return self
     }
 
-    public func call(completionHandler: (QiitaAPIResponse, QiitaItem?) -> Void) {
+    public func call(completionHandler: (QQQiitaAPIResponse, QQQiitaItem?) -> Void) {
         doRequest() { response in
-            completionHandler(response, QiitaItem.fromData(response.data) as? QiitaItem)
+            completionHandler(response, QQQiitaItem.fromData(response.data) as? QQQiitaItem)
         }
     }
 }
 
-public class QiitaAPIPostItem : QiitaAPIBase {
-    public class Body : QiitaEntityBase {
+public class QQQiitaAPIPostItem : QQQiitaAPIBase {
+    public class Body : QQQiitaEntityBase {
         var body: String = ""
         var coediting: Bool = false
         var gist: Bool?
         var `private`: Bool = false
-        var tags: [QiitaTag] = [QiitaTag]()
+        var tags: [QQQiitaTag] = [QQQiitaTag]()
         var title: String = ""
         var tweet: Bool?
 
@@ -774,7 +802,7 @@ public class QiitaAPIPostItem : QiitaAPIBase {
                 // Decode tags
                 if let xx = h["tags"] as? [NSDictionary] {
                     for x in xx {
-                        if let obj = QiitaTag.fromJsonDictionary(x) {
+                        if let obj = QQQiitaTag.fromJsonDictionary(x) {
                             this.tags.append(obj)
                         } else {
                             return nil
@@ -800,13 +828,13 @@ public class QiitaAPIPostItem : QiitaAPIBase {
         }
     }
 
-    public init(config: QiitaAPIConfigProtocol) {
+    public init(config: QQQiitaAPIConfigProtocol) {
         var meta = [String:AnyObject]()
-        let apiInfo = QiitaAPIInfo(method: .POST, path: "items", meta: meta)
+        let apiInfo = QQQiitaAPIInfo(method: .POST, path: "items", meta: meta)
         super.init(config: config, info: apiInfo)
     }
 
-    public func setup() -> QiitaAPIPostItem {
+    public func setup() -> QQQiitaAPIPostItem {
         query = [String:AnyObject]()
 
         var path = apiRequest.info.path
@@ -814,19 +842,19 @@ public class QiitaAPIPostItem : QiitaAPIBase {
         return self
     }
 
-    public func call(object: Body, completionHandler: (QiitaAPIResponse) -> Void) {
+    public func call(object: Body, completionHandler: (QQQiitaAPIResponse) -> Void) {
         doRequest(object) { response in
             completionHandler(response)
         }
     }
 }
 
-public class QiitaAPIPatchItem : QiitaAPIBase {
-    public class Body : QiitaEntityBase {
+public class QQQiitaAPIPatchItem : QQQiitaAPIBase {
+    public class Body : QQQiitaEntityBase {
         var body: String = ""
         var coediting: Bool = false
         var `private`: Bool = false
-        var tags: [QiitaTag] = [QiitaTag]()
+        var tags: [QQQiitaTag] = [QQQiitaTag]()
         var title: String = ""
 
         public override func toJsonDictionary() -> NSDictionary {
@@ -871,7 +899,7 @@ public class QiitaAPIPatchItem : QiitaAPIBase {
                 // Decode tags
                 if let xx = h["tags"] as? [NSDictionary] {
                     for x in xx {
-                        if let obj = QiitaTag.fromJsonDictionary(x) {
+                        if let obj = QQQiitaTag.fromJsonDictionary(x) {
                             this.tags.append(obj)
                         } else {
                             return nil
@@ -895,13 +923,13 @@ public class QiitaAPIPatchItem : QiitaAPIBase {
         }
     }
 
-    public init(config: QiitaAPIConfigProtocol) {
+    public init(config: QQQiitaAPIConfigProtocol) {
         var meta = [String:AnyObject]()
-        let apiInfo = QiitaAPIInfo(method: .PATCH, path: "items/{id}", meta: meta)
+        let apiInfo = QQQiitaAPIInfo(method: .PATCH, path: "items/{id}", meta: meta)
         super.init(config: config, info: apiInfo)
     }
 
-    public func setup(#id: String) -> QiitaAPIPatchItem {
+    public func setup(#id: String) -> QQQiitaAPIPatchItem {
         query = [String:AnyObject]()
         query["id"] = id
 
@@ -911,156 +939,189 @@ public class QiitaAPIPatchItem : QiitaAPIBase {
         return self
     }
 
-    public func call(object: Body, completionHandler: (QiitaAPIResponse) -> Void) {
+    public func call(object: Body, completionHandler: (QQQiitaAPIResponse) -> Void) {
         doRequest(object) { response in
             completionHandler(response)
         }
     }
 }
 
-public class QiitaAPISamplePut : QiitaAPIBase {
-    public class Response : QiitaEntityBase {
-        var count: Int = 0
-        var tags: [QiitaTag] = [QiitaTag]()
+public class QQQiitaDS<ET> {
+    public typealias NotificationHandler = (ET?, QQQiitaDSStatus?) -> Void
+    public var requestedObjectConverter: ET? -> ET? = { $0 }
 
-        public override func toJsonDictionary() -> NSDictionary {
-            var hash = NSMutableDictionary()
-            // Encode count
-            hash["count"] = encode(self.count)
-            // Encode tags
-            hash["tags"] = self.tags.map {x in encode(x)}
-            return hash
+    let factory: QQQiitaAPIFactory
+    public init(factory: QQQiitaAPIFactory) {
+        self.factory = factory
+    }
+
+    private var observers = [(AnyObject, NotificationHandler)]()
+    public func addObserver(object: AnyObject, handler: NotificationHandler) {
+        factory.config.log("\(self) addObserver \(object)")
+        observers.append((object, handler))
+    }
+
+    public func removeObserver(object: AnyObject) {
+        factory.config.log("\(self) removeObserver \(object)")
+        observers = observers.filter { $0.0 !== object}
+    }
+
+    public func notify(data: ET?, status: QQQiitaDSStatus) {
+        factory.config.log("\(self) notify")
+        for observer in observers {
+            observer.1(data, status)
         }
+    }
 
-        public override class func fromJsonDictionary(hash: NSDictionary?) -> Response? {
-            if let h = hash {
-                var this = Response()
-                // Decode count
-                if let x = h["count"] as? Int {
-                    this.count = x
-                } else {
-                    return nil
-                }
+    private var cache = [String:Any]()
+    public var enableCache = true
 
-                // Decode tags
-                if let xx = h["tags"] as? [NSDictionary] {
-                    for x in xx {
-                        if let obj = QiitaTag.fromJsonDictionary(x) {
-                            this.tags.append(obj)
-                        } else {
-                            return nil
-                        }
-                    }
-                } else {
-                    return nil
-                }
+    private func findInCache(key: String) -> Any? {
+        return self.cache[key]
+    }
 
-                return this
-            } else {
-                return nil
+    private func storeInCache(key:String, object: Any?) {
+        if let o = object {
+            if enableCache {
+                self.cache[key] = o
             }
+        } else {
+            self.cache.removeValueForKey(key)
         }
     }
 
-    public init(config: QiitaAPIConfigProtocol) {
-        var meta = [String:AnyObject]()
-        let apiInfo = QiitaAPIInfo(method: .PUT, path: "path/to/{id}/{key}", meta: meta)
-        super.init(config: config, info: apiInfo)
+    public func clearCache() {
+        self.cache.removeAll(keepCapacity: false)
+    }
+}
+
+public class QQQiitaDSStatus {
+    public let response: QQQiitaAPIResponse
+
+    public init(response: QQQiitaAPIResponse) {
+        self.response = response
+    }
+}
+
+
+public class QQQiitaDSLocator {
+    public var ListItem: QQQiitaDSListItem<[QQQiitaItem]>!
+    public var GetItem: QQQiitaDSGetItem<QQQiitaItem>!
+    public var PostItem: QQQiitaDSPostItem<NSNull>!
+    public var PatchItem: QQQiitaDSPatchItem<NSNull>!
+
+    public convenience init(factory: QQQiitaAPIFactory) {
+        self.init()
+        self.ListItem = QQQiitaDSListItem(factory: factory)
+        self.GetItem = QQQiitaDSGetItem(factory: factory)
+        self.PostItem = QQQiitaDSPostItem(factory: factory)
+        self.PatchItem = QQQiitaDSPatchItem(factory: factory)
+    }
+}
+
+public class QQQiitaDSListItem<ET> : QQQiitaDS<ET> {
+    public typealias ET = [QQQiitaItem]
+
+    public override init(factory: QQQiitaAPIFactory) {
+        super.init(factory: factory)
     }
 
-    public func setup(#`where`: String, id: String, key: String, page: Int? = nil, perPage: Int? = nil) -> QiitaAPISamplePut {
-        query = [String:AnyObject]()
-        query["where"] = `where`
-        query["id"] = id
-        query["key"] = key
-        if let x = page { query["page"] = x }
-        if let x = perPage { query["per_page"] = x }
-
-        var path = apiRequest.info.path
-        path = replacePathPlaceholder(path, key: "id")
-        path = replacePathPlaceholder(path, key: "key")
-        apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
-        return self
+    private func cacheKeyFor(page: Int? = nil, perPage: Int? = nil) -> String {
+        var params = [String:AnyObject]()
+        if let x = page { params["page"] = x }
+        if let x = perPage { params["per_page"] = x }
+        return URLUtil.makeQueryString(params)
     }
 
-    public func call(object: [QiitaItem], completionHandler: (QiitaAPIResponse, Response?) -> Void) {
-        doRequest(object) { response in
-            completionHandler(response, Response.fromData(response.data) as? Response)
+    public func data(page: Int? = nil, perPage: Int? = nil) -> ET? {
+        let key = cacheKeyFor(page: page, perPage: perPage)
+        return findInCache(key) as? ET
+    }
+
+    public func request(page: Int? = nil, perPage: Int? = nil) {
+        factory.createListItem().setup(page: page, perPage: perPage).call { res, o in
+            var object = self.requestedObjectConverter(o)
+            if let x = object {
+                let key = self.cacheKeyFor(page: page, perPage: perPage)
+                self.storeInCache(key, object: x)
+            }
+            self.notify(object, status: QQQiitaDSStatus(response: res))
         }
     }
 }
 
-public class QiitaAPISamplePatch : QiitaAPIBase {
-    public init(config: QiitaAPIConfigProtocol) {
-        var meta = [String:AnyObject]()
-        let apiInfo = QiitaAPIInfo(method: .PATCH, path: "path/to/{id}/{key}", meta: meta)
-        super.init(config: config, info: apiInfo)
+public class QQQiitaDSGetItem<ET> : QQQiitaDS<ET> {
+    public typealias ET = QQQiitaItem
+
+    public override init(factory: QQQiitaAPIFactory) {
+        super.init(factory: factory)
     }
 
-    public func setup(#id: String, key: String) -> QiitaAPISamplePatch {
-        query = [String:AnyObject]()
-        query["id"] = id
-        query["key"] = key
-
-        var path = apiRequest.info.path
-        path = replacePathPlaceholder(path, key: "id")
-        path = replacePathPlaceholder(path, key: "key")
-        apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
-        return self
+    private func cacheKeyFor(#id: String) -> String {
+        var params = [String:AnyObject]()
+        params["id"] = id
+        return URLUtil.makeQueryString(params)
     }
 
-    public func call(object: QiitaItem, completionHandler: (QiitaAPIResponse, [String]?) -> Void) {
-        doRequest(object) { response in
-            completionHandler(response, JsonGenObjectFromJsonData(response.data) as? [String])
+    public func data(#id: String) -> ET? {
+        let key = cacheKeyFor(id: id)
+        return findInCache(key) as? ET
+    }
+
+    public func request(#id: String) {
+        factory.createGetItem().setup(id: id).call { res, o in
+            var object = self.requestedObjectConverter(o)
+            if let x = object {
+                let key = self.cacheKeyFor(id: id)
+                self.storeInCache(key, object: x)
+            }
+            self.notify(object, status: QQQiitaDSStatus(response: res))
         }
     }
 }
 
-public class QiitaAPISamplePostBinary : QiitaAPIBase {
-    public class Response : QiitaEntityBase {
-        var url: String = ""
+public class QQQiitaDSPostItem<ET> : QQQiitaDS<ET> {
+    public typealias ET = NSNull
 
-        public override func toJsonDictionary() -> NSDictionary {
-            var hash = NSMutableDictionary()
-            // Encode url
-            hash["url"] = encode(self.url)
-            return hash
-        }
+    public override init(factory: QQQiitaAPIFactory) {
+        super.init(factory: factory)
+    }
 
-        public override class func fromJsonDictionary(hash: NSDictionary?) -> Response? {
-            if let h = hash {
-                var this = Response()
-                // Decode url
-                if let x = h["url"] as? String {
-                    this.url = x
-                } else {
-                    return nil
-                }
+    private func cacheKeyFor() -> String { return "_" }
 
-                return this
-            } else {
-                return nil
-            }
+    public func data() -> ET? {
+        let key = cacheKeyFor()
+        return findInCache(key) as? ET
+    }
+
+    public func request(Body: QQQiitaAPIPostItem.Body) {
+        factory.createPostItem().setup().call(Body) { res in
+            self.notify(NSNull(), status: QQQiitaDSStatus(response: res))
         }
     }
+}
 
-    public init(config: QiitaAPIConfigProtocol) {
-        var meta = [String:AnyObject]()
-        let apiInfo = QiitaAPIInfo(method: .POST, path: "post/to/binary", meta: meta)
-        super.init(config: config, info: apiInfo)
+public class QQQiitaDSPatchItem<ET> : QQQiitaDS<ET> {
+    public typealias ET = NSNull
+
+    public override init(factory: QQQiitaAPIFactory) {
+        super.init(factory: factory)
     }
 
-    public func setup() -> QiitaAPISamplePostBinary {
-        query = [String:AnyObject]()
-
-        var path = apiRequest.info.path
-        apiRequest.request.URL = NSURL(string: path, relativeToURL: config.baseURL)
-        return self
+    private func cacheKeyFor(#id: String) -> String {
+        var params = [String:AnyObject]()
+        params["id"] = id
+        return URLUtil.makeQueryString(params)
     }
 
-    public func call(object: NSData, completionHandler: (QiitaAPIResponse, Response?) -> Void) {
-        doRequest(object) { response in
-            completionHandler(response, Response.fromData(response.data) as? Response)
+    public func data(#id: String) -> ET? {
+        let key = cacheKeyFor(id: id)
+        return findInCache(key) as? ET
+    }
+
+    public func request(Body: QQQiitaAPIPatchItem.Body, id: String) {
+        factory.createPatchItem().setup(id: id).call(Body) { res in
+            self.notify(NSNull(), status: QQQiitaDSStatus(response: res))
         }
     }
 }

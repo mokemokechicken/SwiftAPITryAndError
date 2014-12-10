@@ -8,23 +8,29 @@
 
 import Foundation
 
-private let config = QiitaAPIConfig(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
-private let apiFactory = QiitaAPIFactory(config: config)
+private let config = QQQiitaAPIConfig(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
+private let apiFactory = QQQiitaAPIFactory(config: config)
+private let locator = QQQiitaDSLocator(factory: apiFactory)
 
-apiFactory.createListItem().setup().call { res, items in
-    if let sureItems = items {
-        println(QiitaItem.toJsonString(sureItems, pretty: true))
-    } else {
-        println("Items parse error")
+class Sample {
+    func run() {
+        let listItem = locator.ListItem
+        println(listItem.data())
+        
+        listItem.addObserver(self) { items, error in
+            items?.map { item in println(item.title) }
+            println(listItem.data(perPage: 3)!.count)
+            println(listItem.data(perPage: 4)?.count)
+        }
+        
+        listItem.request(perPage: 3)
+//        listItem.removeObserver(self)
+    }
+    
+    deinit {
+        NSLog("\(self) deinit")
     }
 }
 
-//itemAPI.setup().call() { (response, items) in
-//    if let sureItems = items {
-//        println(Item.toJsonString(sureItems, pritty: true))
-//    } else {
-//        println("Items parse error")
-//    }
-//}
-
+Sample().run()
 CFRunLoopRun()
