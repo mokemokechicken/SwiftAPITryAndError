@@ -947,7 +947,7 @@ public class QQQiitaAPIPatchItem : QQQiitaAPIBase {
 }
 
 public class QQQiitaDS<ET> {
-    public typealias NotificationHandler = (ET?, NSError?) -> Void
+    public typealias NotificationHandler = (ET?, QQQiitaDSStatus?) -> Void
 
     let factory: QQQiitaAPIFactory
     public init(factory: QQQiitaAPIFactory) {
@@ -956,17 +956,19 @@ public class QQQiitaDS<ET> {
 
     private var observers = [(AnyObject, NotificationHandler)]()
     public func addObserver(object: AnyObject, handler: NotificationHandler) {
+        factory.config.log("\(self) addObserver \(object)")
         observers.append((object, handler))
     }
 
     public func removeObserver(object: AnyObject) {
+        factory.config.log("\(self) removeObserver \(object)")
         observers = observers.filter { $0.0 !== object}
     }
 
-    public func notify(data: ET?, error: NSError?) {
+    public func notify(data: ET?, status: QQQiitaDSStatus) {
         factory.config.log("\(self) notify")
         for observer in observers {
-            observer.1(data, error)
+            observer.1(data, status)
         }
     }
 
@@ -989,6 +991,14 @@ public class QQQiitaDS<ET> {
 
     public func clearCache() {
         self.cache.removeAll(keepCapacity: false)
+    }
+}
+
+public class QQQiitaDSStatus {
+    public let response: QQQiitaAPIResponse
+
+    public init(response: QQQiitaAPIResponse) {
+        self.response = response
     }
 }
 
@@ -1033,7 +1043,7 @@ public class QQQiitaDSListItem<ET> : QQQiitaDS<ET> {
                 let key = self.cacheKeyFor(page: page, perPage: perPage)
                 self.storeInCache(key, object: x)
             }
-            self.notify(object, error: res.error)
+            self.notify(object, status: QQQiitaDSStatus(response: res))
         }
     }
 }
@@ -1060,9 +1070,9 @@ public class QQQiitaDSGetItem<ET> : QQQiitaDS<ET> {
         factory.createGetItem().setup(id: id).call { res, object in
             if let x = object {
                 let key = self.cacheKeyFor(id: id)
-                self.storeInCache(key, object: object)
+                self.storeInCache(key, object: x)
             }
-            self.notify(object, error: res.error)
+            self.notify(object, status: QQQiitaDSStatus(response: res))
         }
     }
 }
@@ -1083,7 +1093,7 @@ public class QQQiitaDSPostItem<ET> : QQQiitaDS<ET> {
 
     public func request(Body: QQQiitaAPIPostItem.Body) {
         factory.createPostItem().setup().call(Body) { res in
-            self.notify(NSNull(), error: res.error)
+            self.notify(NSNull(), status: QQQiitaDSStatus(response: res))
         }
     }
 }
@@ -1108,7 +1118,7 @@ public class QQQiitaDSPatchItem<ET> : QQQiitaDS<ET> {
 
     public func request(Body: QQQiitaAPIPatchItem.Body, id: String) {
         factory.createPatchItem().setup(id: id).call(Body) { res in
-            self.notify(NSNull(), error: res.error)
+            self.notify(NSNull(), status: QQQiitaDSStatus(response: res))
         }
     }
 }
