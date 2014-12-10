@@ -966,7 +966,7 @@ public class QQQiitaDS<ET> {
         observers = observers.filter { $0.0 !== object}
     }
 
-    public func notify(data: ET?, status: QQQiitaDSStatus) {
+    private func notify(data: ET?, status: QQQiitaDSStatus) {
         factory.config.log("\(self) notify")
         for observer in observers {
             observer.1(data, status)
@@ -1096,7 +1096,7 @@ public class QQQiitaDSPostItem<ET> : QQQiitaDS<ET> {
 
     public func request(Body: QQQiitaAPIPostItem.Body) {
         factory.createPostItem().setup().call(Body) { res in
-            self.notify(NSNull(), status: QQQiitaDSStatus(response: res))
+            self.notify(nil, status: QQQiitaDSStatus(response: res))
         }
     }
 }
@@ -1121,7 +1121,7 @@ public class QQQiitaDSPatchItem<ET> : QQQiitaDS<ET> {
 
     public func request(Body: QQQiitaAPIPatchItem.Body, id: String) {
         factory.createPatchItem().setup(id: id).call(Body) { res in
-            self.notify(NSNull(), status: QQQiitaDSStatus(response: res))
+            self.notify(nil, status: QQQiitaDSStatus(response: res))
         }
     }
 }
