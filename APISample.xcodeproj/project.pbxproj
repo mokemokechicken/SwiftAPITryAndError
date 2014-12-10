@@ -223,6 +223,7 @@
 		BE5FCCCD1A34186F009C8FD9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -230,7 +231,9 @@
 		BE5FCCCE1A34186F009C8FD9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
 		};

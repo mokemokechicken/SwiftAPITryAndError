@@ -479,7 +479,7 @@ public class QQQiitaAPIConfig : QQQiitaAPIConfigProtocol {
     }
     
     public func log(str: String?) {
-        NSLog("\(str)")
+        if let x = str { NSLog(x) }
     }
     
     public func configureRequest(apiRequest: QQQiitaAPIRequest) {
@@ -946,17 +946,15 @@ public class QQQiitaAPIPatchItem : QQQiitaAPIBase {
     }
 }
 
-public class QQQiitaDS<ET:AnyObject> {
+public class QQQiitaDS<ET> {
     public typealias NotificationHandler = (ET?, NSError?) -> Void
 
-    private var observers = [(AnyObject, NotificationHandler)]()
-
     let factory: QQQiitaAPIFactory
-
     public init(factory: QQQiitaAPIFactory) {
         self.factory = factory
     }
 
+    private var observers = [(AnyObject, NotificationHandler)]()
     public func addObserver(object: AnyObject, handler: NotificationHandler) {
         observers.append((object, handler))
     }
@@ -966,10 +964,151 @@ public class QQQiitaDS<ET:AnyObject> {
     }
 
     public func notify(data: ET?, error: NSError?) {
+        factory.config.log("\(self) notify")
         for observer in observers {
             observer.1(data, error)
         }
     }
+
+    private var cache = [String:Any]()
+    public var enableCache = true
+
+    private func findInCache(key: String) -> Any? {
+        return self.cache[key]
+    }
+
+    private func storeInCache(key:String, object: Any?) {
+        if let o = object {
+            if enableCache {
+                self.cache[key] = o
+            }
+        } else {
+            self.cache.removeValueForKey(key)
+        }
+    }
+
+    public func clearCache() {
+        self.cache.removeAll(keepCapacity: false)
+    }
 }
 
 
+public class QQQiitaDSLocator {
+    public var ListItem: QQQiitaDSListItem<[QQQiitaItem]>!
+    public var GetItem: QQQiitaDSGetItem<QQQiitaItem>!
+    public var PostItem: QQQiitaDSPostItem<NSNull>!
+    public var PatchItem: QQQiitaDSPatchItem<NSNull>!
+
+    public convenience init(factory: QQQiitaAPIFactory) {
+        self.init()
+        self.ListItem = QQQiitaDSListItem(factory: factory)
+        self.GetItem = QQQiitaDSGetItem(factory: factory)
+        self.PostItem = QQQiitaDSPostItem(factory: factory)
+        self.PatchItem = QQQiitaDSPatchItem(factory: factory)
+    }
+}
+
+public class QQQiitaDSListItem<ET> : QQQiitaDS<ET> {
+    public typealias ET = [QQQiitaItem]
+
+    public override init(factory: QQQiitaAPIFactory) {
+        super.init(factory: factory)
+    }
+
+    private func cacheKeyFor(page: Int? = nil, perPage: Int? = nil) -> String {
+        var params = [String:AnyObject]()
+        if let x = page { params["page"] = x }
+        if let x = perPage { params["per_page"] = x }
+        return URLUtil.makeQueryString(params)
+    }
+
+    public func data(page: Int? = nil, perPage: Int? = nil) -> ET? {
+        let key = cacheKeyFor(page: page, perPage: perPage)
+        return findInCache(key) as? ET
+    }
+
+    public func request(page: Int? = nil, perPage: Int? = nil) {
+        factory.createListItem().setup(page: page, perPage: perPage).call { res, object in
+            if let x = object {
+                let key = self.cacheKeyFor(page: page, perPage: perPage)
+                self.storeInCache(key, object: x)
+            }
+            self.notify(object, error: res.error)
+        }
+    }
+}
+
+public class QQQiitaDSGetItem<ET> : QQQiitaDS<ET> {
+    public typealias ET = QQQiitaItem
+
+    public override init(factory: QQQiitaAPIFactory) {
+        super.init(factory: factory)
+    }
+
+    private func cacheKeyFor(#id: String) -> String {
+        var params = [String:AnyObject]()
+        params["id"] = id
+        return URLUtil.makeQueryString(params)
+    }
+
+    public func data(#id: String) -> ET? {
+        let key = cacheKeyFor(id: id)
+        return findInCache(key) as? ET
+    }
+
+    public func request(#id: String) {
+        factory.createGetItem().setup(id: id).call { res, object in
+            if let x = object {
+                let key = self.cacheKeyFor(id: id)
+                self.storeInCache(key, object: object)
+            }
+            self.notify(object, error: res.error)
+        }
+    }
+}
+
+public class QQQiitaDSPostItem<ET> : QQQiitaDS<ET> {
+    public typealias ET = NSNull
+
+    public override init(factory: QQQiitaAPIFactory) {
+        super.init(factory: factory)
+    }
+
+    private func cacheKeyFor() -> String { return "_" }
+
+    public func data() -> ET? {
+        let key = cacheKeyFor()
+        return findInCache(key) as? ET
+    }
+
+    public func request(Body: QQQiitaAPIPostItem.Body) {
+        factory.createPostItem().setup().call(Body) { res in
+            self.notify(NSNull(), error: res.error)
+        }
+    }
+}
+
+public class QQQiitaDSPatchItem<ET> : QQQiitaDS<ET> {
+    public typealias ET = NSNull
+
+    public override init(factory: QQQiitaAPIFactory) {
+        super.init(factory: factory)
+    }
+
+    private func cacheKeyFor(#id: String) -> String {
+        var params = [String:AnyObject]()
+        params["id"] = id
+        return URLUtil.makeQueryString(params)
+    }
+
+    public func data(#id: String) -> ET? {
+        let key = cacheKeyFor(id: id)
+        return findInCache(key) as? ET
+    }
+
+    public func request(Body: QQQiitaAPIPatchItem.Body, id: String) {
+        factory.createPatchItem().setup(id: id).call(Body) { res in
+            self.notify(NSNull(), error: res.error)
+        }
+    }
+}
