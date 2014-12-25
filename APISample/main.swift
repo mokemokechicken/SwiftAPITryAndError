@@ -8,14 +8,14 @@
 
 import Foundation
 
-private let config = QQQiitaAPIConfig(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
-private let apiFactory = QQQiitaAPIFactory(config: config)
-private let locator = QQQiitaDSLocator(factory: apiFactory)
+private let config = QiitaAPIConfig(baseURL: NSURL(string: "http://qiita.com/api/v2/")!)
+private let apiFactory = QiitaAPIFactory(config: config)
+private let locator = QiitaDSLocator(factory: apiFactory)
 
 class Sample {
     func run() {
         let listItem = locator.ListItem
-        println(listItem.data())
+        println(listItem.data()) // fetch from cache
         
         listItem.addObserver(self) { items, error in
             items?.map { item in println(item.title) }

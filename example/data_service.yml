@@ -1,7 +1,7 @@
-data_service_prefix: QQQiitaDS
-api_prefix: QQQiitaAPI
-entity_prefix: QQQiita
-api_error_entity: QQAPIError
+data_service_prefix: QiitaDS
+api_prefix: QiitaAPI
+entity_prefix: Qiita
+api_error_entity: QiitaAPIError
 
 alias:
   pager: &pager
@@ -17,9 +17,6 @@ api:
   GetItem:
     get: items/{id}
     response: Item
-    error:
-      code: Int
-      another: String
 
   PostItem:
     post: items

@@ -6,5 +6,5 @@ cd $(dirname $0)
 
 mkdir -p OJM
 
-ruby ObjectJsonMapperGenerator/bin/make_ojm.rb -c example/data_service.yml -l swift -t ds -o OJM/data_service2.swift
+ruby ObjectJsonMapperGenerator/bin/make_ojm.rb -c example/data_service.yml -l swift -t ds -d OJM/
 
